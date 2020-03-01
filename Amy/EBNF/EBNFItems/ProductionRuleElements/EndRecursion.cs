@@ -1,0 +1,41 @@
+﻿namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+{
+    /// <summary>
+    /// EBNF EndRecursion char
+    /// Is Defined like rule to allow add it to structure.
+    /// Singleton
+    /// </summary>
+    public class EndRecursion : IProductionRule
+    {
+        private static EndRecursion _current;
+        public static EndRecursion Current
+        {
+            get 
+            {
+                if (_current == null)
+                    _current = new EndRecursion();
+                return _current;
+            }
+        }
+
+        public bool IsOptional => false;
+
+        public string Notation => "ε";
+
+        /// <summary>
+        /// Always true
+        /// </summary>
+        public bool Is(string value)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Returns notation
+        /// </summary>
+        public string Rebuild()
+        {
+            return this.Notation;
+        }
+    }
+}
