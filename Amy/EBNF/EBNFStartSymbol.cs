@@ -56,10 +56,5 @@ namespace Amy.EBNF
         {
             return this._productionRules[name];
         }
-
-        public ICompileResult Compile(string value)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

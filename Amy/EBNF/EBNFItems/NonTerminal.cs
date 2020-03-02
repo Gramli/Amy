@@ -24,15 +24,6 @@ namespace Amy.EBNF.EBNFItems
         public bool IsOptional => this._rightSide.IsOptional;
 
         /// <summary>
-        /// inicialize name and right side
-        /// </summary>
-        //public NonTerminal(string name, IEBNFItem rightSide)
-        //    : this(name)
-        //{
-        //    this._rightSide = rightSide;
-        //}
-
-        /// <summary>
         /// Allow to inicialize only name with set rule later
         /// </summary>
         /// <param name="name"></param>
@@ -66,7 +57,5 @@ namespace Amy.EBNF.EBNFItems
                 throw new NullReferenceException($"Right side rule of NonTerminal: {this.Name} is null.");
             return this._rightSide.Is(value);
         }
-
-        public abstract ICompileResult Compile(string value);
     }
 }

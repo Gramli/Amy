@@ -1,7 +1,6 @@
 ﻿using Amy.EBNF.EBNFItems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amy.EBNF
 {

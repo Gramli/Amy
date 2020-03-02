@@ -42,7 +42,5 @@
         {
             return this.StartSymbol.IsNonTerminal(nonTerminalName, value);
         }
-
-        public abstract ICompileResult Compile(string value);
     }
 }

@@ -3,13 +3,8 @@
     /// <summary>
     /// Represents item of EBNF grammar
     /// </summary>
-    internal interface IEBNFItem
+    internal interface IEBNFItem : IFormalGrammarItem
     {
-        /// <summary>
-        /// Determines that value is IEBNFItem 
-        /// </summary>
-        /// <returns></returns>
-        bool Is(string value);
         /// <summary>
         /// Allows to rebuilt item like is written in grammar
         /// </summary>
