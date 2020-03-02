@@ -1,11 +1,6 @@
-﻿using Amy.EBNF.EBNFItems;
-
-namespace Amy.EBNF
+﻿namespace Amy
 {
-    /// <summary>
-    /// Represents Start symbol of EBNF grammar
-    /// </summary>
-    public interface IEBNFStartSymbol
+    public interface IStartSymbol : ICompiler
     {
         /// <summary>
         /// Recognize if nonterminal rule can apply on value
@@ -15,13 +10,11 @@ namespace Amy.EBNF
         /// <summary>
         /// Determines that value is grammar start symbol expression
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         bool IsExpression(string value);
 
         /// <summary>
         /// Get grammar nonterminal by name
         /// </summary>
-        NonTerminal GetNonTerminal(string name);
+        INonTerminal GetNonTerminal(string name);
     }
 }

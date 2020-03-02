@@ -11,9 +11,10 @@ namespace Amy.EBNF
     /// <summary>
     /// Implementation of EBNF Grammar parser
     /// </summary>
-    public class EBNFGrammarParserCustom : IEBNFGrammarParser
+    public class EBNFGrammarParserCustom : IFormalGrammarParser
     {
-        private readonly List<NonTerminal> _emptyRules; 
+        private readonly List<NonTerminal> _emptyRules;
+        private EBNFGrammarDefinition actualDefinition;
         private const string _termination = ";";
 
         public EBNFGrammarParserCustom()
@@ -21,21 +22,23 @@ namespace Amy.EBNF
             this._emptyRules = new List<NonTerminal>();
         }
 
-        public IEBNFStartSymbol Parse(string grammar)
+        public IStartSymbol Parse(IFormalGrammarDefinition definition)
         {
+            this.actualDefinition = (EBNFGrammarDefinition)definition;
             this._emptyRules.Clear();
+
             var productionRules = new List<NonTerminal>();
 
-            grammar = RemoveSpecialChars(grammar);
+            //grammar = RemoveSpecialChars(grammar);
 
-            var productionRulesStrings = SplitByTermination(grammar).Reverse().ToArray();
-            for (var i = 0; i < productionRulesStrings.Length - 1; i++)
+            //var productionRulesStrings = SplitByTermination(grammar).Reverse().ToArray();
+            for (var i = 0; i < this.actualDefinition.ProductionRules.Length - 1; i++)
             {
-                if (string.IsNullOrEmpty(productionRulesStrings[i])) continue;
-                var nonTerminal = GetNonTerminal(productionRulesStrings[i], productionRules);
+                if (string.IsNullOrEmpty(this.actualDefinition.ProductionRules[i])) continue;
+                var nonTerminal = GetNonTerminal(this.actualDefinition.ProductionRules[i], productionRules);
                 productionRules.Add(nonTerminal);
             }
-            var startSymbolNonTerminal = GetNonTerminal(productionRulesStrings[productionRulesStrings.Length - 1], productionRules);
+            var startSymbolNonTerminal = GetNonTerminal(this.actualDefinition.ProductionRules[this.actualDefinition.ProductionRules.Length - 1], productionRules);
             productionRules.Add(startSymbolNonTerminal);
             var startSymbol = new EBNFStartSymbol(startSymbolNonTerminal, productionRules);
             SetEmptyRules(startSymbol);
@@ -47,11 +50,11 @@ namespace Amy.EBNF
             return grammar.Replace(" ", string.Empty).Replace(Environment.NewLine, string.Empty);
         }
 
-        private void SetEmptyRules(IEBNFStartSymbol startSymbol)
+        private void SetEmptyRules(IStartSymbol startSymbol)
         {
             foreach(var rule in this._emptyRules)
             {
-                IEBNFItem item = startSymbol.GetNonTerminal(rule.Name);
+                IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Name);
                 rule.SetRightSide(item);
             }
         }
@@ -60,7 +63,8 @@ namespace Amy.EBNF
         {
             var splittedProductionRule = SplitByDefinition(productionRule);
             var nonTerminalRule = GetEBNFItem(splittedProductionRule[1], listOfExistedTerminals);
-            var result = new NonTerminal(splittedProductionRule[0], nonTerminalRule);
+            var result = this.actualDefinition.EmptyNonTerminals[splittedProductionRule[0]];
+            result.SetRightSide(nonTerminalRule);//new NonTerminal(splittedProductionRule[0], nonTerminalRule);
             return result;
 
         }
@@ -145,7 +149,7 @@ namespace Amy.EBNF
                         result = (from item in listOfExistedTerminals where item.Name.Equals(builder.ToString()) select item).SingleOrDefault();
                         if (result == null)
                         {
-                            var emptyNonTerm = new NonTerminal(builder.ToString());
+                            var emptyNonTerm = this.actualDefinition.EmptyNonTerminals[builder.ToString()];
                             this._emptyRules.Add(emptyNonTerm);
                             result = emptyNonTerm;
                         }

@@ -5,7 +5,7 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
     /// <summary>
     /// EBNF Concatenation rule
     /// </summary>
-    public class Concatenation : IProductionRule
+    internal class Concatenation : IProductionRule
     {
         public const string notation = ",";
         public string Notation => Concatenation.notation;

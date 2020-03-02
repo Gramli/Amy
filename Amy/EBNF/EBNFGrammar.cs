@@ -1,27 +1,27 @@
-﻿using Amy.EBNF.EBNFItems;
-
-namespace Amy.EBNF
+﻿namespace Amy.EBNF
 {
     /// <summary>
     /// Represents EBNF grammar
     /// </summary>
-    public abstract class EBNFGrammar : IEBNFGrammar
+    public abstract class EBNFGrammar : IFormalGrammar
     {
-        protected readonly IEBNFStartSymbol _startSymbol;
+        protected readonly IStartSymbol _startSymbol;
+
+        public IStartSymbol StartSymbol => this._startSymbol;
         /// <summary>
         /// Inicialize StartSymbol
         /// </summary>
         /// <param name="name">left side of dedication</param>
         /// <param name="startSymbolRule">rule</param>
         /// <param name="productionRules">production rules in grammar</param>
-        public EBNFGrammar(IEBNFStartSymbol startSymbol)
+        public EBNFGrammar(IStartSymbol startSymbol)
         {
             this._startSymbol = startSymbol;
         }
 
-        public NonTerminal GetNonTerminal(string name)
+        public INonTerminal GetNonTerminal(string name)
         {
-            return this._startSymbol.GetNonTerminal(name);
+            return this.StartSymbol.GetNonTerminal(name);
         }
 
 
@@ -32,7 +32,7 @@ namespace Amy.EBNF
         /// <returns></returns>
         public bool IsExpression(string value)
         {
-            return this._startSymbol.IsExpression(value);
+            return this.StartSymbol.IsExpression(value);
         }
 
         /// <summary>
@@ -40,7 +40,9 @@ namespace Amy.EBNF
         /// </summary>
         public bool IsNonTerminal(string nonTerminalName, string value)
         {
-            return this._startSymbol.IsNonTerminal(nonTerminalName, value);
+            return this.StartSymbol.IsNonTerminal(nonTerminalName, value);
         }
+
+        public abstract ICompileResult Compile(string value);
     }
 }

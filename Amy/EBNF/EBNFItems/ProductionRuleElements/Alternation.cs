@@ -3,7 +3,7 @@
     /// <summary>
     /// EBNF Alternation rule
     /// </summary>
-    public class Alternation : IProductionRule
+    internal class Alternation : IProductionRule
     {
         public const string notation = "|";
 

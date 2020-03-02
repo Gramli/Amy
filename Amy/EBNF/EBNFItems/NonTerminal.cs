@@ -5,7 +5,7 @@ namespace Amy.EBNF.EBNFItems
     /// <summary>
     /// Represents NonTerminal in EBNF
     /// </summary>
-    public class NonTerminal : IEBNFItem
+    public abstract class NonTerminal : IEBNFItem, INonTerminal
     {
         public const string Definition = "=";
         /// <summary>
@@ -26,11 +26,11 @@ namespace Amy.EBNF.EBNFItems
         /// <summary>
         /// inicialize name and right side
         /// </summary>
-        public NonTerminal(string name, IEBNFItem rightSide)
-            : this(name)
-        {
-            this._rightSide = rightSide;
-        }
+        //public NonTerminal(string name, IEBNFItem rightSide)
+        //    : this(name)
+        //{
+        //    this._rightSide = rightSide;
+        //}
 
         /// <summary>
         /// Allow to inicialize only name with set rule later
@@ -52,7 +52,7 @@ namespace Amy.EBNF.EBNFItems
         /// <summary>
         /// Returns NonTerminal name
         /// </summary>
-        public virtual string Rebuild()
+        public string Rebuild()
         {
             return $"{this.Name}";
         }
@@ -60,11 +60,13 @@ namespace Amy.EBNF.EBNFItems
         /// <summary>
         /// Resolve value using right side rule
         /// </summary>
-        public virtual bool Is(string value)
+        public bool Is(string value)
         {
             if (this._rightSide == null)
                 throw new NullReferenceException($"Right side rule of NonTerminal: {this.Name} is null.");
             return this._rightSide.Is(value);
         }
+
+        public abstract ICompileResult Compile(string value);
     }
 }

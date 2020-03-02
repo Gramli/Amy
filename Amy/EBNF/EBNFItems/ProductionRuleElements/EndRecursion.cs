@@ -5,7 +5,7 @@
     /// Is Defined like rule to allow add it to structure.
     /// Singleton
     /// </summary>
-    public class EndRecursion : IProductionRule
+    internal class EndRecursion : IProductionRule
     {
         private static EndRecursion _current;
         public static EndRecursion Current

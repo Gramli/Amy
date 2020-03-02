@@ -1,6 +1,6 @@
 ﻿namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 {
-    public class Grouping : IGroupProductionRule
+    internal class Grouping : IGroupProductionRule
     {
         public const string notation = "(";
 

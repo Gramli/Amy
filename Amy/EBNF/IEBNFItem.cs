@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents item of EBNF grammar
     /// </summary>
-    public interface IEBNFItem
+    internal interface IEBNFItem
     {
         /// <summary>
         /// Determines that value is IEBNFItem 

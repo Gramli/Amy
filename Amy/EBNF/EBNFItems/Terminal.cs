@@ -5,7 +5,7 @@ namespace Amy.EBNF.EBNFItems
     /// <summary>
     /// Represents terminal in ENBF
     /// </summary>
-    public class Terminal : IEBNFItem
+    internal class Terminal : IEBNFItem
     {
         /// <summary>
         /// Terminal representation - its character or string

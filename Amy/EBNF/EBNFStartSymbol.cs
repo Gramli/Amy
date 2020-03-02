@@ -6,7 +6,7 @@ namespace Amy.EBNF
     /// <summary>
     /// Implementation of EBNF start symbol
     /// </summary>
-    public class EBNFStartSymbol : IEBNFStartSymbol
+    public class EBNFStartSymbol : IStartSymbol
     {
         /// <summary>
         /// Production rules cached by its names
@@ -52,9 +52,14 @@ namespace Amy.EBNF
         /// <summary>
         /// Retunrs nonTerminal by name
         /// </summary>
-        public NonTerminal GetNonTerminal(string name)
+        INonTerminal IStartSymbol.GetNonTerminal(string name)
         {
             return this._productionRules[name];
+        }
+
+        public ICompileResult Compile(string value)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

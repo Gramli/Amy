@@ -5,7 +5,7 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
     /// <summary>
     /// EBNF Repetition rule (group)
     /// </summary>
-    public class Repetition : IGroupProductionRule
+    internal class Repetition : IGroupProductionRule
     {
         public const string notation = "{";
         public const string endNotation = "}";

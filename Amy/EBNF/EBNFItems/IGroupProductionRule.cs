@@ -3,7 +3,7 @@
     /// <summary>
     /// Group production rule in EBNF
     /// </summary>
-    public interface IGroupProductionRule : IProductionRule
+    internal interface IGroupProductionRule : IProductionRule
     {
         /// <summary>
         /// End notation of production rule in EBNF

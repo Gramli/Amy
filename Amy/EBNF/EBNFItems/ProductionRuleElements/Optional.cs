@@ -5,7 +5,7 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
     /// <summary>
     /// EBNF Optional rule (group)
     /// </summary>
-    public class Optional : IGroupProductionRule
+    internal class Optional : IGroupProductionRule
     {
         public const string notation = "[";
 
