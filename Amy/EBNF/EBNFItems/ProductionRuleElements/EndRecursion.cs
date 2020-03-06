@@ -1,4 +1,6 @@
-﻿namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+﻿using System.Collections.Generic;
+
+namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
     /// EBNF EndRecursion char
@@ -25,7 +27,7 @@
         /// <summary>
         /// Always true
         /// </summary>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
             return true;
         }

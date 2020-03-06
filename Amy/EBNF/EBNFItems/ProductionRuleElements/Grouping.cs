@@ -1,4 +1,7 @@
-﻿namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+﻿using Amy.Cache;
+using System.Collections.Generic;
+
+namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 {
     internal class Grouping : IGroupProductionRule
     {
@@ -13,17 +16,25 @@
 
         private readonly IEBNFItem _item;
 
+        private SmartFixedCollection<string> _cache;
+
         public Grouping(IEBNFItem item)
         {
             this._item = item;
+            this._cache = new SmartFixedCollection<string>(20);
         }
 
         /// <summary>
         /// Resolve value by rule item
         /// </summary>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
-            return this._item.Is(value);
+            var result = this._item.IsExpression(value);
+            if(result)
+            {
+                this._cache.Add(value);
+            }
+            return result;
         }
 
         /// <summary>
@@ -34,5 +45,6 @@
         {
             return $"{this.Notation}{this._item.Rebuild()}{this.EndNotation}";
         }
+
     }
 }

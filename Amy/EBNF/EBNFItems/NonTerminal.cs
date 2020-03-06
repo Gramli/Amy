@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Amy.Cache;
+using System;
+using System.Collections.Generic;
 
 namespace Amy.EBNF.EBNFItems
 {
@@ -12,16 +14,18 @@ namespace Amy.EBNF.EBNFItems
         /// NonTerminal value on right side
         /// </summary>
         private IEBNFItem _rightSide;
-
-        /// <summary>
-        /// NonTerminal Name, left side of definition
-        /// </summary>
-        public string Name { get; private set; }
-
         /// <summary>
         /// 
         /// </summary>
         public bool IsOptional => this._rightSide.IsOptional;
+        /// <summary>
+        /// NonTerminal Name, left side of definition
+        /// </summary>
+        public string Expression { get; private set; }
+
+        public IFormalGrammarItem Item => this;
+
+        private SmartFixedCollection<string> _cache;
 
         /// <summary>
         /// Allow to inicialize only name with set rule later
@@ -29,7 +33,8 @@ namespace Amy.EBNF.EBNFItems
         /// <param name="name"></param>
         public NonTerminal(string name)
         {
-            this.Name = name;
+            this.Expression = name;
+            this._cache = new SmartFixedCollection<string>(20);
         }
 
         /// <summary>
@@ -45,17 +50,23 @@ namespace Amy.EBNF.EBNFItems
         /// </summary>
         public string Rebuild()
         {
-            return $"{this.Name}";
+            return $"{this.Expression}";
         }
 
         /// <summary>
         /// Resolve value using right side rule
         /// </summary>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
             if (this._rightSide == null)
-                throw new NullReferenceException($"Right side rule of NonTerminal: {this.Name} is null.");
-            return this._rightSide.Is(value);
+                throw new NullReferenceException($"Right side rule of NonTerminal: {this.Expression} is null.");
+            var result = this._rightSide.IsExpression(value) || this._cache.Contains(value);
+
+            if (result && !this._cache.Contains(value))
+            {
+                this._cache.Add(value);
+            }
+            return result;
         }
     }
 }

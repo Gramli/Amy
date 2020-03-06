@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Amy
+﻿namespace Amy
 {
-    public interface INonTerminal
+    public interface INonTerminal : IFormalGrammarItem, IExpressionItem
     {
-        /// <summary>
-        /// NonTerminal name
-        /// </summary>
-        string Name { get; }
 
-        IEnumerable<INonTerminal> GetExpressionStructure(string value);
     }
 }

@@ -1,30 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Amy.EBNF.EBNFItems
 {
     /// <summary>
     /// Represents terminal in ENBF
     /// </summary>
-    internal class Terminal : IEBNFItem
+    internal class Terminal : IEBNFItem, IExpressionItem
     {
+        public bool IsOptional => false;
+
         /// <summary>
         /// Terminal representation - its character or string
         /// </summary>
-        private readonly string _value;
+        public string Expression {get; private set;}
 
-        public bool IsOptional => false;
+        public IFormalGrammarItem Item => this;
 
         public Terminal(string value)
         {
-            this._value = value;
+            this.Expression = value;
         }
 
         /// <summary>
         /// Resolve value using string.Equals
         /// </summary>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
-            return this._value.Equals(value);
+            return this.Expression.Equals(value);
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace Amy.EBNF.EBNFItems
         /// <returns></returns>
         public string Rebuild()
         {
-            return $"\"{this._value}\"";
+            return $"\"{this.Expression}\"";
         }
     }
 }

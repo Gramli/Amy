@@ -1,4 +1,7 @@
-﻿namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+﻿using Amy.Cache;
+using System.Collections.Generic;
+
+namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
     /// EBNF Alternation rule
@@ -15,18 +18,34 @@
 
         private readonly IEBNFItem _right;
 
+        private IEBNFItem _lastExpressionItem;
+
+        private SmartFixedCollectionPair<string, IEBNFItem> _cache;
+
         public Alternation(IEBNFItem left, IEBNFItem right)
         {
             this._left = left;
             this._right = right;
+            this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(20);
         }
 
         /// <summary>
         /// Resolve value. True if left item or right item
         /// </summary>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
-            return this._left.Is(value) || this._right.Is(value);
+            var result = this._cache.Contains(value);
+            if (!result && (this._left.IsExpression(value)))
+            {
+                result = true;
+                this._cache.Add(value, this._left);
+            }
+            else if (!result && (this._right.IsExpression(value)))
+            {
+                result = true;
+                this._cache.Add(value, this._right);
+            }
+            return result;
         }
 
         /// <summary>

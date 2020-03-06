@@ -18,6 +18,8 @@ namespace Amy.EBNF
         /// </summary>
         private readonly NonTerminal _startSymbolNonTerminal;
 
+        public string Name => this._startSymbolNonTerminal.Name;
+
         internal EBNFStartSymbol(NonTerminal startSymbolNonTerminal, IEnumerable<NonTerminal> productionRules)
         {
             this._startSymbolNonTerminal = startSymbolNonTerminal;
@@ -38,7 +40,7 @@ namespace Amy.EBNF
         /// <returns></returns>
         public bool IsExpression(string value)
         {
-            return this._startSymbolNonTerminal.Is(value);
+            return this._startSymbolNonTerminal.IsExpression(value);
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace Amy.EBNF
         /// </summary>
         public bool IsNonTerminal(string nonTerminalName, string value)
         {
-            return this._productionRules[nonTerminalName].Is(value);
+            return this._productionRules[nonTerminalName].IsExpression(value);
         }
 
         /// <summary>

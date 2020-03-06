@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Amy
 {
@@ -9,7 +7,6 @@ namespace Amy
         /// <summary>
         /// Determines that value is Item 
         /// </summary>
-        /// <returns></returns>
         bool IsExpression(string value);
     }
 }

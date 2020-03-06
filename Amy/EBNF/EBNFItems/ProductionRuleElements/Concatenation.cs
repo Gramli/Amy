@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -16,21 +17,24 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
+        private List<IEBNFItem> _lastExpressionItems;
+
         public Concatenation(IEBNFItem left, IEBNFItem right)
         {
             this._left = left;
             this._right = right;
+            this._lastExpressionItems = new List<IEBNFItem>();
         }
 
         /// <summary>
         /// Resolve value using char concat
         /// </summary>
         /// <returns></returns>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
             var result = false;
             var isNullOrEmpty = string.IsNullOrEmpty(value);
-
+            this._lastExpressionItems.Clear();
             //its much faster to check value by character than check full value, thats why full value checking is at end
 
             if (!isNullOrEmpty)
@@ -41,20 +45,43 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
                     actualValue += value[i];
                     var ii = i + 1;
                     var restOfValue = value.Substring(ii, value.Length - ii);
-                    if (this._left.Is(actualValue) && this._right.Is(restOfValue))
+                    if (this._left.IsExpression(actualValue) && this._right.IsExpression(restOfValue))
                     {
                         result = true;
+                        this._lastExpressionItems.Add(this._left);
+                        this._lastExpressionItems.Add(this._right);
                         break;
                     }
                 }
             }
 
-            if(!result)
+            if (!result)
             {
-                result = isNullOrEmpty && this._left.IsOptional && this._right.IsOptional ||
-                    this._right.IsOptional && this._left.Is(value) || this._left.IsOptional && this._right.Is(value);
+                if (isNullOrEmpty && this._left.IsOptional && this._right.IsOptional)
+                    result = true;
+                else if (this._right.IsOptional && this._left.IsExpression(value))
+                {
+                    result = true;
+                    this._lastExpressionItems.Add(this._left);
+                }
+                else if (this._left.IsOptional && this._right.IsExpression(value))
+                {
+                    result = true;
+                    this._lastExpressionItems.Add(this._right);
+                }
             }
 
+            return result;
+        }
+
+        public IEnumerable<IFormalGrammarItem> FetchLastExpressionStructure()
+        {
+            List<IFormalGrammarItem> result = null;
+            foreach (var item in this._lastExpressionItems)
+                if (item is IProductionRule)
+                    result.AddRange(item.CheckExpressionAndFetchStructure());
+                else
+                    result.Add(item);
             return result;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Amy.Cache;
+using System.Text;
 
 namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -16,37 +17,46 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _item;
 
+        private SmartFixedCollection<string> _cache;
+
         public Repetition(IEBNFItem item)
         {
             this._item = item;
+            this._cache = new SmartFixedCollection<string>(30);
         }
 
         /// <summary>
         /// Resolve value using by chars concat
         /// </summary>
         /// <returns></returns>
-        public bool Is(string value)
+        public bool IsExpression(string value)
         {
-            var result = string.IsNullOrEmpty(value);
+            var result = string.IsNullOrEmpty(value) || this._cache.Contains(value);
             if (!result)
             {
-                var builder = new StringBuilder();
+                var builder = new StringBuilder(); //aabb
                 for (var i = 0; i < value.Length -1; i++)
                 {
                     builder.Append(value[i]);
-                    if (this._item.Is(builder.ToString()))
+                    if (this._item.IsExpression(builder.ToString()))
                     {
                         var ii = i + 1;
-                        var restOfValue = value.Substring(ii, value.Length - ii);
-                        result = Is(restOfValue);
+                        var restOfValue = value[ii..];
+                        result = IsExpression(restOfValue);
+                        if(result)
+                        {
+                            this._cache.Add(value);
+                        }
                         break;
                     }
                 }
             }
-            if(!result)
+            if(!result && (this._item.IsExpression(value) && !this._cache.Contains(value)))
             {
-                result = this._item.Is(value);
+                this._cache.Add(value);
+                result = true;
             }
+
             return result;
         }
 
