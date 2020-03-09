@@ -18,15 +18,13 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private IEBNFItem _lastExpressionItem;
-
         private SmartFixedCollectionPair<string, IEBNFItem> _cache;
 
-        public Alternation(IEBNFItem left, IEBNFItem right)
+        public Alternation(IEBNFItem left, IEBNFItem right, int cacheLength)
         {
             this._left = left;
             this._right = right;
-            this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(20);
+            this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(cacheLength);
         }
 
         /// <summary>
@@ -55,6 +53,11 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
         public string Rebuild()
         {
             return $"{this._left.Rebuild()}{this.Notation}{this._right.Rebuild()}";
+        }
+
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
+        {
+            return this._cache[value].ExpressionStructure(value);
         }
     }
 }

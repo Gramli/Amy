@@ -23,10 +23,10 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
         private SmartFixedCollection<string> _cache;
 
 
-        public Optional(IEBNFItem item)
+        public Optional(IEBNFItem item, int cacheLength)
         {
             this._item = item;
-            this._cache = new SmartFixedCollection<string>(20);
+            this._cache = new SmartFixedCollection<string>(cacheLength);
         }
 
         /// <summary>
@@ -49,6 +49,13 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
         public string Rebuild()
         {
             return $"{this.Notation}{this._item.Rebuild()}{this.EndNotation}";
+        }
+
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
+        {
+            IEnumerable<IExpressionItem> result = null;
+            if (IsExpression(value)) result = this._item.ExpressionStructure(value);
+            return result;
         }
     }
 }

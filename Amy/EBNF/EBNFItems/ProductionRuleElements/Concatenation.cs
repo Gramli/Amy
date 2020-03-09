@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Amy.Cache;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Amy.EBNF.EBNFItems.ProductionRuleElements
@@ -17,13 +18,14 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private List<IEBNFItem> _lastExpressionItems;
+        private SmartFixedCollectionPair<string, IEBNFItem> _cache;
 
-        public Concatenation(IEBNFItem left, IEBNFItem right)
+        public Concatenation(IEBNFItem left, IEBNFItem right, int cacheLength)
         {
             this._left = left;
             this._right = right;
-            this._lastExpressionItems = new List<IEBNFItem>();
+            //this._lastExpressionItems = new List<IEBNFItem>();
+            this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(cacheLength);
         }
 
         /// <summary>
@@ -34,7 +36,6 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
         {
             var result = false;
             var isNullOrEmpty = string.IsNullOrEmpty(value);
-            this._lastExpressionItems.Clear();
             //its much faster to check value by character than check full value, thats why full value checking is at end
 
             if (!isNullOrEmpty)
@@ -48,8 +49,8 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
                     if (this._left.IsExpression(actualValue) && this._right.IsExpression(restOfValue))
                     {
                         result = true;
-                        this._lastExpressionItems.Add(this._left);
-                        this._lastExpressionItems.Add(this._right);
+                        this._cache.Add(actualValue, this._left);
+                        this._cache.Add(restOfValue, this._right);
                         break;
                     }
                 }
@@ -62,27 +63,21 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
                 else if (this._right.IsOptional && this._left.IsExpression(value))
                 {
                     result = true;
-                    this._lastExpressionItems.Add(this._left);
+                    this._cache.Add(value, this._left);
                 }
                 else if (this._left.IsOptional && this._right.IsExpression(value))
                 {
                     result = true;
-                    this._lastExpressionItems.Add(this._right);
+                    this._cache.Add(value, this._right);
                 }
             }
 
             return result;
         }
 
-        public IEnumerable<IFormalGrammarItem> FetchLastExpressionStructure()
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            List<IFormalGrammarItem> result = null;
-            foreach (var item in this._lastExpressionItems)
-                if (item is IProductionRule)
-                    result.AddRange(item.CheckExpressionAndFetchStructure());
-                else
-                    result.Add(item);
-            return result;
+            return this._cache[value].ExpressionStructure(value);
         }
 
         /// <summary>

@@ -54,7 +54,7 @@ namespace Amy.EBNF
         {
             foreach(var rule in this._emptyRules)
             {
-                IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Name);
+                IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Expression);
                 rule.SetRightSide(item);
             }
         }

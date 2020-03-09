@@ -38,5 +38,12 @@ namespace Amy.EBNF.EBNFItems
         {
             return $"\"{this.Expression}\"";
         }
+
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
+        {
+            IEnumerable<IExpressionItem> result = null;
+            if (IsExpression(value)) result = new IExpressionItem[] { this };
+            return result;
+        }
     }
 }

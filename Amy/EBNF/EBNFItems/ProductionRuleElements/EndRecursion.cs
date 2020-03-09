@@ -39,5 +39,10 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
         {
             return this.Notation;
         }
+
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
+        {
+            return null;
+        }
     }
 }
