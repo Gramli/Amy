@@ -1,4 +1,4 @@
-﻿namespace Amy.Cache
+﻿namespace Amy.Caching
 {
     public class SmartFixedCollection<K> : UsageFixedCollection<K> where K : class
     {

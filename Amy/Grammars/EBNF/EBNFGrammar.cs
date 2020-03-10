@@ -1,4 +1,6 @@
-﻿namespace Amy.EBNF
+﻿using System.Collections.Generic;
+
+namespace Amy.Grammars.EBNF
 {
     /// <summary>
     /// Represents EBNF grammar
@@ -41,6 +43,11 @@
         public bool IsNonTerminal(string nonTerminalName, string value)
         {
             return this.StartSymbol.IsNonTerminal(nonTerminalName, value);
+        }
+
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
+        {
+            return this.StartSymbol.ExpressionStructure(value);
         }
     }
 }

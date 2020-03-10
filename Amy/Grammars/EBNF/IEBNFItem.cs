@@ -1,4 +1,4 @@
-﻿namespace Amy.EBNF
+﻿namespace Amy.Grammars.EBNF
 {
     /// <summary>
     /// Represents item of EBNF grammar

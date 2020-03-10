@@ -1,8 +1,8 @@
-﻿using Amy.Cache;
+﻿using Amy.Caching;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
     /// EBNF Concatenation rule
@@ -24,7 +24,6 @@ namespace Amy.EBNF.EBNFItems.ProductionRuleElements
         {
             this._left = left;
             this._right = right;
-            //this._lastExpressionItems = new List<IEBNFItem>();
             this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(cacheLength);
         }
 

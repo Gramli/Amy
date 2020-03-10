@@ -1,7 +1,7 @@
-﻿using Amy.Cache;
+﻿using Amy.Caching;
 using System.Collections.Generic;
 
-namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
     /// EBNF Alternation rule

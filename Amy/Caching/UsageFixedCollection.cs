@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amy.Cache
+namespace Amy.Caching
 {
     public abstract class UsageFixedCollection<K> where K : class
     {
@@ -32,7 +32,10 @@ namespace Amy.Cache
         {
             if (this._usage.Count.Equals(this._length))
                 throw new ArgumentException("Can't add item because of fixed length of collection.");
-            this._usage.Add(key, 0);
+            else if (this._usage.ContainsKey(key))
+                IncreaseUsage(key);
+            else
+                this._usage.Add(key, 0);
         }
 
         protected void IncreaseUsage(K key)

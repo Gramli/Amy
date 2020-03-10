@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Amy.EBNF.EBNFItems
+namespace Amy.Grammars.EBNF.EBNFItems
 {
     /// <summary>
     /// Represents terminal in ENBF

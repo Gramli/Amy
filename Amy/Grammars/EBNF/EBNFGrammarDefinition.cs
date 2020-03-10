@@ -1,11 +1,11 @@
-﻿using Amy.EBNF.EBNFItems;
+﻿using Amy.Grammars.EBNF.EBNFItems;
 using System.Collections.Generic;
 
-namespace Amy.EBNF
+namespace Amy.Grammars.EBNF
 {
     public abstract class EBNFGrammarDefinition : IFormalGrammarDefinition
     {
         public abstract string[] ProductionRules { get; }
-        public abstract Dictionary<string, NonTerminal> EmptyNonTerminals { get; }
+        public abstract NonTerminal GetNewNonTerminalInstance(string name);
     }
 }

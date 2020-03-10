@@ -1,8 +1,8 @@
-﻿using Amy.Cache;
+﻿using Amy.Caching;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
     /// EBNF Repetition rule (group)

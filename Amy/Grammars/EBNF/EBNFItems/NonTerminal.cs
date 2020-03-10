@@ -1,8 +1,9 @@
-﻿using Amy.Cache;
+﻿using Amy.Caching;
+using Amy.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace Amy.EBNF.EBNFItems
+namespace Amy.Grammars.EBNF.EBNFItems
 {
     /// <summary>
     /// Represents NonTerminal in EBNF
@@ -31,10 +32,10 @@ namespace Amy.EBNF.EBNFItems
         /// Allow to inicialize only name with set rule later
         /// </summary>
         /// <param name="name"></param>
-        public NonTerminal(string name)
+        public NonTerminal(string name, int cacheLength)
         {
             this.Expression = name;
-            this._cache = new SmartFixedCollection<string>(20);
+            this._cache = new SmartFixedCollection<string>(cacheLength);
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace Amy.EBNF.EBNFItems
         public bool IsExpression(string value)
         {
             if (this._rightSide == null)
-                throw new NullReferenceException($"Right side rule of NonTerminal: {this.Expression} is null.");
+                throw new GrammarParseException($"Right side rule of NonTerminal: {this.Expression} is null.", new NullReferenceException());
             var result = this._rightSide.IsExpression(value) || this._cache.Contains(value);
 
             if (result && !this._cache.Contains(value))

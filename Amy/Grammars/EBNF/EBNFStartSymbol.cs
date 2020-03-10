@@ -1,7 +1,7 @@
-﻿using Amy.EBNF.EBNFItems;
+﻿using Amy.Grammars.EBNF.EBNFItems;
 using System.Collections.Generic;
 
-namespace Amy.EBNF
+namespace Amy.Grammars.EBNF
 {
     /// <summary>
     /// Implementation of EBNF start symbol
@@ -18,7 +18,9 @@ namespace Amy.EBNF
         /// </summary>
         private readonly NonTerminal _startSymbolNonTerminal;
 
-        public string Name => this._startSymbolNonTerminal.Name;
+        public string Expression => this._startSymbolNonTerminal.Expression;
+
+        public IFormalGrammarItem Item => this._startSymbolNonTerminal.Item;
 
         internal EBNFStartSymbol(NonTerminal startSymbolNonTerminal, IEnumerable<NonTerminal> productionRules)
         {
@@ -30,7 +32,7 @@ namespace Amy.EBNF
         private void InicializeProductionRules(IEnumerable<NonTerminal> productionRules)
         {
             foreach (NonTerminal productionRule in productionRules)
-                this._productionRules[productionRule.Name] = productionRule;
+                this._productionRules[productionRule.Expression] = productionRule;
         }
 
         /// <summary>
@@ -57,6 +59,11 @@ namespace Amy.EBNF
         INonTerminal IStartSymbol.GetNonTerminal(string name)
         {
             return this._productionRules[name];
+        }
+
+        public IEnumerable<IExpressionItem> ExpressionStructure(string value)
+        {
+            return this._startSymbolNonTerminal.ExpressionStructure(value);
         }
     }
 }

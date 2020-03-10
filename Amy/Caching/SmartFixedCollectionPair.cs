@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Amy.Cache
+namespace Amy.Caching
 {
     public class SmartFixedCollectionPair<K, V> : UsageFixedCollection<K> where K : class
     {
@@ -29,8 +29,9 @@ namespace Amy.Cache
             {
                 Remove(keyToRemove);
             }
+            if(!this._data.ContainsKey(key))
+                this._data.Add(key, value);
             AddUsage(key);
-            this._data.Add(key, value);
         }
 
         public override void Remove(K key)

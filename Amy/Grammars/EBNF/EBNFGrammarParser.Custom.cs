@@ -1,12 +1,13 @@
-﻿using Amy.EBNF.EBNFItems;
-using Amy.EBNF.EBNFItems.ProductionRuleElements;
+﻿using Amy.Exceptions;
+using Amy.Grammars.EBNF.EBNFItems;
+using Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Amy.EBNF
+namespace Amy.Grammars.EBNF
 {
     /// <summary>
     /// Implementation of EBNF Grammar parser
@@ -29,16 +30,17 @@ namespace Amy.EBNF
 
             var productionRules = new List<NonTerminal>();
 
-            //grammar = RemoveSpecialChars(grammar);
-
             //var productionRulesStrings = SplitByTermination(grammar).Reverse().ToArray();
-            for (var i = 0; i < this.actualDefinition.ProductionRules.Length - 1; i++)
+            for (var i = this.actualDefinition.ProductionRules.Length - 1; i > 0; i--)
             {
                 if (string.IsNullOrEmpty(this.actualDefinition.ProductionRules[i])) continue;
-                var nonTerminal = GetNonTerminal(this.actualDefinition.ProductionRules[i], productionRules);
+                string rule = RemoveSpecialChars(this.actualDefinition.ProductionRules[i]);
+                var nonTerminal = GetNonTerminal(rule, productionRules);
                 productionRules.Add(nonTerminal);
             }
-            var startSymbolNonTerminal = GetNonTerminal(this.actualDefinition.ProductionRules[this.actualDefinition.ProductionRules.Length - 1], productionRules);
+
+            string startSymbolRule = RemoveSpecialChars(this.actualDefinition.ProductionRules[0]);
+            var startSymbolNonTerminal = GetNonTerminal(startSymbolRule, productionRules);
             productionRules.Add(startSymbolNonTerminal);
             var startSymbol = new EBNFStartSymbol(startSymbolNonTerminal, productionRules);
             SetEmptyRules(startSymbol);
@@ -52,7 +54,7 @@ namespace Amy.EBNF
 
         private void SetEmptyRules(IStartSymbol startSymbol)
         {
-            foreach(var rule in this._emptyRules)
+            foreach (var rule in this._emptyRules)
             {
                 IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Expression);
                 rule.SetRightSide(item);
@@ -63,7 +65,7 @@ namespace Amy.EBNF
         {
             var splittedProductionRule = SplitByDefinition(productionRule);
             var nonTerminalRule = GetEBNFItem(splittedProductionRule[1], listOfExistedTerminals);
-            var result = this.actualDefinition.EmptyNonTerminals[splittedProductionRule[0]];
+            var result = this.actualDefinition.GetNewNonTerminalInstance(splittedProductionRule[0]);
             result.SetRightSide(nonTerminalRule);//new NonTerminal(splittedProductionRule[0], nonTerminalRule);
             return result;
 
@@ -104,8 +106,8 @@ namespace Amy.EBNF
                 var right = GetEBNFItem(newRule, listOfExistedTerminals, endNotation);
                 switch (firstChar)
                 {
-                    case Alternation.notation: result = new Alternation(left, right); break;
-                    case Concatenation.notation: result = new Concatenation(left, right); break;
+                    case Alternation.notation: result = new Alternation(left, right, 20); break;
+                    case Concatenation.notation: result = new Concatenation(left, right, 20); break;
                 }
             }
             return result;
@@ -120,7 +122,7 @@ namespace Amy.EBNF
         {
             IEBNFItem result = null;
 
-            switch(rule[0].ToString())
+            switch (rule[0].ToString())
             {
                 case "\"":
                     {
@@ -146,10 +148,10 @@ namespace Amy.EBNF
                                 break;
                             builder.Append(t);
                         }
-                        result = (from item in listOfExistedTerminals where item.Name.Equals(builder.ToString()) select item).SingleOrDefault();
+                        result = (from item in listOfExistedTerminals where item.Expression.Equals(builder.ToString()) select item).SingleOrDefault();
                         if (result == null)
                         {
-                            var emptyNonTerm = this.actualDefinition.EmptyNonTerminals[builder.ToString()];
+                            var emptyNonTerm = this.actualDefinition.GetNewNonTerminalInstance(builder.ToString());
                             this._emptyRules.Add(emptyNonTerm);
                             result = emptyNonTerm;
                         }
@@ -162,21 +164,21 @@ namespace Amy.EBNF
                         {
                             case Repetition.notation:
                                 var repItem = GetEBNFItem(restOfRepRule, listOfExistedTerminals, Repetition.endNotation);
-                                result = new Repetition(repItem);
+                                result = new Repetition(repItem, 20);
                                 break;
                             case Optional.notation:
                                 var opItem = GetEBNFItem(restOfRepRule, listOfExistedTerminals, Optional.endNotation);
-                                result = new Optional(opItem);
+                                result = new Optional(opItem, 20);
                                 break;
                             case Grouping.notation:
                                 var grItem = GetEBNFItem(restOfRepRule, listOfExistedTerminals, Grouping.endNotation);
-                                result = new Grouping(grItem);
+                                result = new Grouping(grItem, 20);
                                 break;
                         }
                     }
                     break;
                 default:
-                    throw new ArgumentException($"Can't recognize character: {rule[0]}");
+                    throw new GrammarParseException($"Grammar parse error. Can't recognize character: {rule[0]}", new ArgumentException());
             }
             return result;
         }

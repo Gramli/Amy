@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Amy.EBNF.EBNFItems.ProductionRuleElements
+namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
     /// EBNF EndRecursion char

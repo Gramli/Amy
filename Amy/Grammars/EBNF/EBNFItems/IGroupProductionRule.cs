@@ -1,4 +1,4 @@
-﻿namespace Amy.EBNF.EBNFItems
+﻿namespace Amy.Grammars.EBNF.EBNFItems
 {
     /// <summary>
     /// Group production rule in EBNF
