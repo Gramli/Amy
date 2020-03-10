@@ -9,12 +9,16 @@
 
         public void Add(K key)
         {
-            var keyToRemove = GetKeyToRemove();
-            if (keyToRemove != null)
+            if (Contains(key))
+                IncreaseUsage(key);
+            else if (this._full)
             {
+                K keyToRemove = GetKeyToRemove();
                 Remove(keyToRemove);
+                AddUsage(key);
             }
-            AddUsage(key);
+            else
+                AddUsage(key);
         }
 
         public override void Remove(K key)
