@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -47,7 +48,22 @@ namespace Amy.Caching
             return this._usage.ContainsKey(key);
         }
 
-        public abstract void Remove(K key);
+        public int Count()
+        {
+            return this._usage.Count;
+        }
+
+        protected IEnumerator<K> GetUsageEnumerator()
+        {
+            return this._usage.Keys.GetEnumerator();
+        }
+
+        protected void ClearUsage()
+        {
+            this._usage.Clear();
+        }
+
+        public abstract bool Remove(K key);
 
         public abstract bool Contains(K key);
     }

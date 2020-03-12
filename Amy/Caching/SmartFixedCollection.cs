@@ -1,7 +1,14 @@
-﻿namespace Amy.Caching
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Amy.Caching
 {
-    public class SmartFixedCollection<K> : UsageFixedCollection<K> where K : class
+    public class SmartFixedCollection<K> : UsageFixedCollection<K>, IEnumerable<K>, ICollection<K> where K : class
     {
+        int ICollection<K>.Count => Count();
+
+        public bool IsReadOnly => true;
+
         public SmartFixedCollection(int length)
             : base(length)
         {
@@ -21,14 +28,35 @@
                 AddUsage(key);
         }
 
-        public override void Remove(K key)
+        public override bool Remove(K key)
         {
             RemoveUsage(key);
+            return true;
         }
 
         public override bool Contains(K key)
         {
             return ContainsUsage(key);
+        }
+
+        public IEnumerator<K> GetEnumerator()
+        {
+            return GetUsageEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetUsageEnumerator();
+        }
+
+        public void Clear()
+        {
+            ClearUsage();
+        }
+
+        public void CopyTo(K[] array, int arrayIndex)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
