@@ -33,11 +33,16 @@ namespace Amy.UnitTests
 
             //check count
             Assert.IsTrue(col.Count() == this.colSize);
-            var items = col.GroupBy(x => x);
             //check duplicates
             Assert.IsFalse(col.GroupBy(x => x).Where(g => g.Count() > 1).Any());
-            
-
+            //remove item
+            string lastItem = col.Last();
+            col.Remove(lastItem);
+            //get first and add
+            string first = col.First();
+            col.Add(first);
+            //length should not change
+            Assert.AreEqual(colSize - 1, col.Count());
         }
     }
 }
