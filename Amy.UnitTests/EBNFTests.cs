@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Amy.Grammars.EBNF;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,8 +25,11 @@ namespace Amy.UnitTests
 
         [TestMethod]
         public void ParsingTest()
-        { 
-            
+        {
+            //EBNFGrammarDefinition definition = new EBNFGrammarDefinition()
+
+            //EBNFGrammarParserCustom parser = new EBNFGrammarParserCustom(50);
+            //parser.Parse()
         }
     }
 }
