@@ -11,6 +11,11 @@ namespace Amy.Grammars.EBNF.EBNFItems
     public abstract class NonTerminal : IEBNFItem, INonTerminal
     {
         public const string Definition = "=";
+        
+        /// <summary>
+        /// Determines that nonterminal is definition (leftSide
+        /// </summary>
+        internal bool OnLeft { get; set; }
         /// <summary>
         /// NonTerminal value on right side
         /// </summary>
@@ -22,8 +27,15 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// <summary>
         /// NonTerminal Name, left side of definition
         /// </summary>
-        public string Expression { get; private set; }
+        public string Name { get; private set; }
 
+        /// <summary>
+        /// Implementation of IExpressionItem - actual setted expression
+        /// </summary>
+        public string Expression { get; private set; }
+        /// <summary>
+        /// Implementation of IExpressionItem
+        /// </summary>
         public IFormalGrammarItem Item => this;
 
         private SmartFixedCollection<string> _cache;
@@ -34,7 +46,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// <param name="name"></param>
         public NonTerminal(string name, int cacheLength)
         {
-            this.Expression = name;
+            this.Name = name;
             this._cache = new SmartFixedCollection<string>(cacheLength);
         }
 
@@ -51,7 +63,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// </summary>
         public string Rebuild()
         {
-            return $"{this.Expression}";
+            return $"{this.Name}";
         }
 
         /// <summary>
@@ -60,7 +72,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
         public bool IsExpression(string value)
         {
             if (this._rightSide == null)
-                throw new GrammarParseException($"Right side rule of NonTerminal: {this.Expression} is null.", new NullReferenceException());
+                throw new GrammarParseException($"Right side rule of NonTerminal: {this.Name} is null.", new NullReferenceException());
             var result = this._rightSide.IsExpression(value) || this._cache.Contains(value);
 
             if (result && !this._cache.Contains(value))
@@ -73,7 +85,14 @@ namespace Amy.Grammars.EBNF.EBNFItems
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IEnumerable<IExpressionItem> result = null;
-            if (IsExpression(value)) result = new IExpressionItem[] { this };
+            bool isExpression = IsExpression(value);
+            if (isExpression && !this.OnLeft)
+            {
+                this.Expression = value;
+                result = new IExpressionItem[] { this };
+            }
+            else if (isExpression)
+                result = this._rightSide.ExpressionStructure(value);
             return result;
         }
     }

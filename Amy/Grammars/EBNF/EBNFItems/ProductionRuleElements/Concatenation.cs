@@ -18,13 +18,13 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private SmartFixedCollectionPair<string, IEBNFItem> _cache;
+        private SmartFixedCollectionPair<string, Dictionary<string, IEBNFItem>> _cache;
 
         public Concatenation(IEBNFItem left, IEBNFItem right, int cacheLength)
         {
             this._left = left;
             this._right = right;
-            this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(cacheLength);
+            this._cache = new SmartFixedCollectionPair<string, Dictionary<string, IEBNFItem>>(cacheLength);
         }
 
         /// <summary>
@@ -33,23 +33,23 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         /// <returns></returns>
         public bool IsExpression(string value)
         {
-            var result = false;
+            var result = this._cache.ContainsKey(value);
             var isNullOrEmpty = string.IsNullOrEmpty(value);
             //its much faster to check value by character than check full value, thats why full value checking is at end
-
-            if (!isNullOrEmpty)
+            if (!isNullOrEmpty && !result)
             {
                 var actualValue = string.Empty;
                 for (int i = 0; i < value.Length - 1; i++)
                 {
                     actualValue += value[i];
                     var ii = i + 1;
-                    var restOfValue = value.Substring(ii, value.Length - ii);
+                    var restOfValue = value[ii..];
                     if (this._left.IsExpression(actualValue) && this._right.IsExpression(restOfValue))
                     {
                         result = true;
-                        this._cache.Add(actualValue, this._left);
-                        this._cache.Add(restOfValue, this._right);
+                        this._cache.Add(value, new Dictionary<string, IEBNFItem>(2));
+                        this._cache[value].Add(actualValue, this._left);
+                        this._cache[value].Add(restOfValue, this._right);
                         break;
                     }
                 }
@@ -57,26 +57,36 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
             if (!result)
             {
-                if (isNullOrEmpty && this._left.IsOptional && this._right.IsOptional)
-                    result = true;
-                else if (this._right.IsOptional && this._left.IsExpression(value))
+                result = isNullOrEmpty && this._left.IsOptional && this._right.IsOptional;
+                if (!result && this._right.IsOptional && this._left.IsExpression(value))
                 {
                     result = true;
-                    this._cache.Add(value, this._left);
+                    AddOneDictionaryItemToCache(value, this._left);
                 }
-                else if (this._left.IsOptional && this._right.IsExpression(value))
+                else if (!result && this._left.IsOptional && this._right.IsExpression(value))
                 {
                     result = true;
-                    this._cache.Add(value, this._right);
+                    AddOneDictionaryItemToCache(value, this._right);
                 }
             }
 
             return result;
         }
 
+        private void AddOneDictionaryItemToCache(string value, IEBNFItem item)
+        {
+            this._cache.Add(value, new Dictionary<string, IEBNFItem>(1));
+            this._cache[value].Add(value, item);
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            return this._cache[value].ExpressionStructure(value);
+            List<IExpressionItem> result = new List<IExpressionItem>();
+            foreach (var item in this._cache[value])
+            {
+                result.AddRange(item.Value.ExpressionStructure(item.Key));
+            }
+            return result;
         }
 
         /// <summary>

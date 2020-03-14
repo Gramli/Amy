@@ -35,7 +35,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             var result = string.IsNullOrEmpty(value) || this._cache.Contains(value);
             if (!result)
             {
-                var builder = new StringBuilder(); //aabb
+                var builder = new StringBuilder();
                 for (var i = 0; i < value.Length -1; i++)
                 {
                     builder.Append(value[i]);

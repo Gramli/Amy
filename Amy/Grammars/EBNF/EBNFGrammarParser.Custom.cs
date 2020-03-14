@@ -1,6 +1,7 @@
 ﻿using Amy.Exceptions;
 using Amy.Grammars.EBNF.EBNFItems;
 using Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements;
+using Amy.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,27 +38,29 @@ namespace Amy.Grammars.EBNF
                 if (string.IsNullOrEmpty(this._actualDefinition.ProductionRules[i])) continue;
                 string rule = RemoveSpecialChars(this._actualDefinition.ProductionRules[i]);
                 var nonTerminal = GetNonTerminal(rule, productionRules);
+                nonTerminal.OnLeft = true;
                 productionRules.Add(nonTerminal);
             }
 
             string startSymbolRule = RemoveSpecialChars(this._actualDefinition.ProductionRules[0]);
             var startSymbolNonTerminal = GetNonTerminal(startSymbolRule, productionRules);
+            startSymbolNonTerminal.OnLeft = true;
             productionRules.Add(startSymbolNonTerminal);
             var startSymbol = new EBNFStartSymbol(startSymbolNonTerminal, productionRules);
             SetEmptyRules(startSymbol);
             return startSymbol;
         }
 
-        private string RemoveSpecialChars(string grammar)
+        private string RemoveSpecialChars(string rule)
         {
-            return grammar.Replace(" ", string.Empty).Replace(Environment.NewLine, string.Empty);
+            return rule.RemoveSpaces().RemoveNewLines();
         }
 
         private void SetEmptyRules(IStartSymbol startSymbol)
         {
             foreach (var rule in this._emptyRules)
             {
-                IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Expression);
+                IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Name);
                 rule.SetRightSide(item);
             }
         }
@@ -96,6 +99,8 @@ namespace Amy.Grammars.EBNF
             var left = GetStartEBNFItem(rule, listOfExistedTerminals);
             var lengthOfLeftRule = left.Rebuild().Length;
             var restOfRule = rule.Substring(lengthOfLeftRule, rule.Length - lengthOfLeftRule);
+            if (string.IsNullOrEmpty(restOfRule))
+                throw new GrammarParseException("Can't find IEBNFItem, rest of rule is null or empty. Check termination charatcter.");
             var firstChar = restOfRule[0].ToString();
             if (!string.IsNullOrEmpty(endNotation) && firstChar.Equals(endNotation))
                 result = left;
@@ -149,13 +154,14 @@ namespace Amy.Grammars.EBNF
                                 break;
                             builder.Append(t);
                         }
-                        result = (from item in listOfExistedTerminals where item.Expression.Equals(builder.ToString()) select item).SingleOrDefault();
+                        result = (from item in listOfExistedTerminals where item.Name.Equals(builder.ToString()) select item).SingleOrDefault();
                         if (result == null)
                         {
                             var emptyNonTerm = this._actualDefinition.GetNewNonTerminalInstance(builder.ToString());
                             this._emptyRules.Add(emptyNonTerm);
                             result = emptyNonTerm;
                         }
+                        ((NonTerminal)result).OnLeft = false;
                     }
                     break;
                 case var groupItem when Regex.IsMatch(groupItem, @"[\[\{\(]"):
@@ -179,7 +185,7 @@ namespace Amy.Grammars.EBNF
                     }
                     break;
                 default:
-                    throw new GrammarParseException($"Grammar parse error. Can't recognize character: {rule[0]}", new ArgumentException());
+                    throw new GrammarParseException($"Grammar parse error. Can't recognize character: {rule[0]}. Check missing rules characters.", new ArgumentException());
             }
             return result;
         }

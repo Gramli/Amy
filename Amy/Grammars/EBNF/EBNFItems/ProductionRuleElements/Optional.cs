@@ -1,6 +1,5 @@
 ﻿using Amy.Caching;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {

@@ -1,4 +1,5 @@
-﻿using Amy.Grammars.EBNF.EBNFItems;
+﻿using Amy.Exceptions;
+using Amy.Grammars.EBNF.EBNFItems;
 using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF
@@ -20,6 +21,8 @@ namespace Amy.Grammars.EBNF
 
         public string Expression => this._startSymbolNonTerminal.Expression;
 
+        public string Name => this._startSymbolNonTerminal.Name;
+
         public IFormalGrammarItem Item => this._startSymbolNonTerminal.Item;
 
         internal EBNFStartSymbol(NonTerminal startSymbolNonTerminal, IEnumerable<NonTerminal> productionRules)
@@ -32,7 +35,7 @@ namespace Amy.Grammars.EBNF
         private void InicializeProductionRules(IEnumerable<NonTerminal> productionRules)
         {
             foreach (NonTerminal productionRule in productionRules)
-                this._productionRules[productionRule.Expression] = productionRule;
+                this._productionRules[productionRule.Name] = productionRule;
         }
 
         /// <summary>
@@ -58,6 +61,8 @@ namespace Amy.Grammars.EBNF
         /// </summary>
         INonTerminal IStartSymbol.GetNonTerminal(string name)
         {
+            if (!this._productionRules.ContainsKey(name))
+                throw new MissingNonTerminalException("There is missing non terminal.", new KeyNotFoundException());
             return this._productionRules[name];
         }
 
