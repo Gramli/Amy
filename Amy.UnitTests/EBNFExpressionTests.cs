@@ -2,7 +2,9 @@
 using Amy.Grammars.EBNF.EBNFItems;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Amy.UnitTests
@@ -108,6 +110,59 @@ namespace Amy.UnitTests
                 Assert.IsInstanceOfType(item.Item, typeof(NonTerminal));
                 Assert.AreEqual("variable", ((NonTerminal)item.Item).Name);
             }
+        }
+
+        [TestMethod]
+        public void ExpressionTest_Performace()
+        {
+            var definitionMock = new Mock<EBNFGrammarDefinition>();
+
+            definitionMock.Setup(exp => exp.ProductionRules).Returns(
+                (new string[]
+                {
+                    this.definition.Space,
+                    this.definition.Termination,
+                    this.definition.Character,
+                    this.definition.Digit,
+                    this.definition.IntType,
+                    this.definition.BoolType,
+                    this.definition.Type,
+                    this.definition.Name,
+                    this.definition.BoolValue,
+                    this.definition.BoolVar,
+                    this.definition.IntValue,
+                    this.definition.IntVar,
+                    this.definition.Variable,
+                    this.definition.Function,
+                    this.definition.Program
+                }).Reverse().ToArray());
+            definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
+            {
+                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
+            });
+
+
+            TimeSpan timeResult = Time(() =>
+            {
+                var symbol = this.parser.Parse(definitionMock.Object);
+
+                var variableExp = "int a=12;";
+                var variableExp1 = "bool b=true;";
+                var variableExp2 = "bool b=false;";
+                var funcExp1 = $"private int ab{{{variableExp}{variableExp1}{variableExp2}}};";
+
+                var prgStructure = symbol.ExpressionStructure(funcExp1);
+            });
+
+            Assert.IsTrue(timeResult.TotalMilliseconds < 170);
+        }
+
+        private TimeSpan Time(Action toTime)
+        {
+            var timer = Stopwatch.StartNew();
+            toTime();
+            timer.Stop();
+            return timer.Elapsed;
         }
     }
 }

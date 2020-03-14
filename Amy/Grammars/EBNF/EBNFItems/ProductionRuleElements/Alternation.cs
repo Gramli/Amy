@@ -33,12 +33,12 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         public bool IsExpression(string value)
         {
             var result = this._cache.Contains(value);
-            if (!result && (this._left.IsExpression(value)))
+            if (!result && this._left.IsExpression(value))
             {
                 result = true;
                 this._cache.Add(value, this._left);
             }
-            else if (!result && (this._right.IsExpression(value)))
+            else if (!result && this._right.IsExpression(value))
             {
                 result = true;
                 this._cache.Add(value, this._right);
