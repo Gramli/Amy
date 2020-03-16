@@ -73,7 +73,10 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IEnumerable<IExpressionItem> result = null;
-            if (IsExpression(value)) result = this._item.ExpressionStructure(value);
+            if (IsExpression(value))
+            {
+                result = this._item.ExpressionStructure(value);
+            }
             return result;
         }
     }

@@ -57,7 +57,12 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            return this._cache[value].ExpressionStructure(value);
+            IEnumerable<IExpressionItem> result = null;
+            if (IsExpression(value))
+            {
+                result = this._cache[value].ExpressionStructure(value);
+            }
+            return result;
         }
     }
 }

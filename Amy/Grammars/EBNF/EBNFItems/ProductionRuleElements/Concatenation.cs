@@ -81,10 +81,14 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            List<IExpressionItem> result = new List<IExpressionItem>();
-            foreach (var item in this._cache[value])
+            List<IExpressionItem> result = null;
+            if (IsExpression(value))
             {
-                result.AddRange(item.Value.ExpressionStructure(item.Key));
+                result = new List<IExpressionItem>();
+                foreach (var item in this._cache[value])
+                {
+                    result.AddRange(item.Value.ExpressionStructure(item.Key));
+                }
             }
             return result;
         }
