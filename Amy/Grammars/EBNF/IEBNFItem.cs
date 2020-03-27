@@ -15,5 +15,10 @@
         /// Determines that item is optional in EBNF structure
         /// </summary>
         bool IsOptional { get; }
+
+        /// <summary>
+        /// Determines that value is 
+        /// </summary>
+        bool IsExpression(string value);
     }
 }
