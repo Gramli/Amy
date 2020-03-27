@@ -13,10 +13,7 @@ namespace Amy.Grammars.EBNF
         /// <summary>
         /// Inicialize StartSymbol
         /// </summary>
-        /// <param name="name">left side of dedication</param>
-        /// <param name="startSymbolRule">rule</param>
-        /// <param name="productionRules">production rules in grammar</param>
-        public EBNFGrammar(IStartSymbol startSymbol)
+        protected EBNFGrammar(IStartSymbol startSymbol)
         {
             this._startSymbol = startSymbol;
         }

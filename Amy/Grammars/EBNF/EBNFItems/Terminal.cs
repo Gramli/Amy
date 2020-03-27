@@ -5,7 +5,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
     /// <summary>
     /// Represents terminal in ENBF
     /// </summary>
-    internal class Terminal : IEBNFItem, IExpressionItem
+    internal class Terminal : IEBNFItem, ITerminal
     {
         public bool IsOptional => false;
 
