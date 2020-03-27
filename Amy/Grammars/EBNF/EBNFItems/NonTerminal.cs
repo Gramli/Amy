@@ -20,6 +20,8 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// NonTerminal value on right side
         /// </summary>
         private IEBNFItem _rightSide;
+
+        public IFormalGrammarItem Rule => this._rightSide;
         /// <summary>
         /// 
         /// </summary>
@@ -38,13 +40,13 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// </summary>
         public IFormalGrammarItem Item => this;
 
-        private SmartFixedCollection<string> _cache;
+        private readonly SmartFixedCollection<string> _cache;
 
         /// <summary>
         /// Allow to inicialize only name with set rule later
         /// </summary>
         /// <param name="name"></param>
-        public NonTerminal(string name, int cacheLength)
+        protected NonTerminal(string name, int cacheLength)
         {
             this.Name = name;
             this._cache = new SmartFixedCollection<string>(cacheLength);

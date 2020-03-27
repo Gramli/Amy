@@ -12,8 +12,8 @@ namespace Amy.UnitTests
     [TestClass]
     public class EBNFExpressionTests
     {
-        private IFormalGrammarParser parser;
-        private TestGrammarDefinition definition;
+        private readonly IFormalGrammarParser parser;
+        private readonly TestGrammarDefinition definition;
 
         public EBNFExpressionTests()
         {
