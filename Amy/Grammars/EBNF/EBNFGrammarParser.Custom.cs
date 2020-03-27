@@ -46,7 +46,7 @@ namespace Amy.Grammars.EBNF
             var startSymbolNonTerminal = GetNonTerminal(startSymbolRule, productionRules);
             startSymbolNonTerminal.OnLeft = true;
             productionRules.Add(startSymbolNonTerminal);
-            var startSymbol = new EBNFStartSymbol(startSymbolNonTerminal, productionRules);
+            var startSymbol = this._actualDefinition.GetStartSymbol(startSymbolNonTerminal, productionRules);
             SetEmptyRules(startSymbol);
             return startSymbol;
         }
@@ -70,7 +70,7 @@ namespace Amy.Grammars.EBNF
             var splittedProductionRule = SplitByDefinition(productionRule);
             var nonTerminalRule = GetEBNFItem(splittedProductionRule[1], listOfExistedTerminals);
             var result = this._actualDefinition.GetNewNonTerminalInstance(splittedProductionRule[0]);
-            result.SetRightSide(nonTerminalRule);//new NonTerminal(splittedProductionRule[0], nonTerminalRule);
+            result.SetRightSide(nonTerminalRule);
             return result;
 
         }

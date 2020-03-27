@@ -7,7 +7,7 @@ namespace Amy.Grammars.EBNF
     /// <summary>
     /// Implementation of EBNF start symbol
     /// </summary>
-    public class EBNFStartSymbol : IStartSymbol
+    public abstract class EBNFStartSymbol : IStartSymbol
     {
         /// <summary>
         /// Production rules cached by its names
@@ -25,7 +25,7 @@ namespace Amy.Grammars.EBNF
 
         public IFormalGrammarItem Item => this._startSymbolNonTerminal.Item;
 
-        internal EBNFStartSymbol(NonTerminal startSymbolNonTerminal, IEnumerable<NonTerminal> productionRules)
+        public EBNFStartSymbol(NonTerminal startSymbolNonTerminal, IEnumerable<NonTerminal> productionRules)
         {
             this._startSymbolNonTerminal = startSymbolNonTerminal;
             this._productionRules = new Dictionary<string, NonTerminal>();

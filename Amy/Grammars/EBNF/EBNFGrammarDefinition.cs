@@ -7,5 +7,7 @@ namespace Amy.Grammars.EBNF
     {
         public abstract string[] ProductionRules { get; }
         public abstract NonTerminal GetNewNonTerminalInstance(string name);
+
+        public abstract EBNFStartSymbol GetStartSymbol(NonTerminal startSymbolNonTerminal, List<NonTerminal> rules);
     }
 }
