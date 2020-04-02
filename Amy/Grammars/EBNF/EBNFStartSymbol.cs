@@ -19,11 +19,9 @@ namespace Amy.Grammars.EBNF
         /// </summary>
         private readonly NonTerminal _startSymbolNonTerminal;
 
-        public string Expression => this._startSymbolNonTerminal.Expression;
-
         public string Name => this._startSymbolNonTerminal.Name;
 
-        public IFormalGrammarItem Item => this._startSymbolNonTerminal.Item;
+        public IFormalGrammarItem Rule => this._startSymbolNonTerminal;
 
         public EBNFStartSymbol(NonTerminal startSymbolNonTerminal, IEnumerable<NonTerminal> productionRules)
         {

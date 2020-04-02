@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Amy.Caching
 {
-    public class SmartFixedCollection<K> : UsageFixedCollection<K>, IEnumerable<K>, ICollection<K> where K : class
+    public class SmartFixedCollection<K> : UsageFixedCollection<K>, ICollection<K> where K : class
     {
         int ICollection<K>.Count => Count();
 

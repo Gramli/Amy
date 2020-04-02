@@ -1,6 +1,6 @@
 ﻿namespace Amy
 {
-    public interface INonTerminal : IFormalGrammarItem, IExpressionItem
+    public interface INonTerminal : IFormalGrammarItem
     {
         string Name { get; }
 

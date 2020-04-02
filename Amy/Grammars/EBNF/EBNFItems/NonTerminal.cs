@@ -11,11 +11,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
     public abstract class NonTerminal : IEBNFItem, INonTerminal
     {
         public const string Definition = "=";
-        
-        /// <summary>
-        /// Determines that nonterminal is definition (leftSide
-        /// </summary>
-        internal bool OnLeft { get; set; }
+
         /// <summary>
         /// NonTerminal value on right side
         /// </summary>
@@ -30,15 +26,6 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// NonTerminal Name, left side of definition
         /// </summary>
         public string Name { get; private set; }
-
-        /// <summary>
-        /// Implementation of IExpressionItem - actual setted expression
-        /// </summary>
-        public string Expression { get; private set; }
-        /// <summary>
-        /// Implementation of IExpressionItem
-        /// </summary>
-        public IFormalGrammarItem Item => this;
 
         private readonly SmartFixedCollection<string> _cache;
 
@@ -86,15 +73,21 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            IEnumerable<IExpressionItem> result = null;
-            bool isExpression = IsExpression(value);
-            if (isExpression && !this.OnLeft)
+            IExpressionItem[] result = null;
+
+            var isExpression = IsExpression(value);
+            if (isExpression)
             {
-                this.Expression = value;
-                result = new IExpressionItem[] { this };
+                var resultItem = new GrammarExpressionItem()
+                {
+                    Item = this,
+                    Expression = value,
+                    Childs = this._rightSide.ExpressionStructure(value)
+                };
+
+                result = new IExpressionItem[] { resultItem };
             }
-            else if (isExpression)
-                result = this._rightSide.ExpressionStructure(value);
+
             return result;
         }
     }

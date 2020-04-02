@@ -9,12 +9,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
     {
         public bool IsOptional => false;
 
-        /// <summary>
-        /// Terminal representation - its character or string
-        /// </summary>
-        public string Expression {get; private set;}
-
-        public IFormalGrammarItem Item => this;
+        public string Expression { get; private set; }
 
         public Terminal(string value)
         {
@@ -40,8 +35,20 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            IEnumerable<IExpressionItem> result = null;
-            if (IsExpression(value)) result = new IExpressionItem[] { this };
+            IExpressionItem[] result = null;
+
+            var isExpression = IsExpression(value);
+            if (isExpression)
+            {
+                var resultItem = new GrammarExpressionItem()
+                {
+                    Item = this,
+                    Expression = value,
+                };
+
+                result = new IExpressionItem[] { resultItem };
+            }
+
             return result;
         }
     }

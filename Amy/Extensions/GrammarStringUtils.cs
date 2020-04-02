@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 
-namespace Amy.Utils
+namespace Amy.Extensions
 {
-    public static class GrammarStringUtils
+    public static class StringExtensions
     {
         public static string RemoveCharExceptTerminals(this string rule, char character)
         {
@@ -28,7 +28,7 @@ namespace Amy.Utils
 
         public static string RemoveSpaces(this string rule)
         {
-            return GrammarStringUtils.RemoveCharExceptTerminals(rule, ' ');
+            return RemoveCharExceptTerminals(rule, ' ');
         }
     }
 }

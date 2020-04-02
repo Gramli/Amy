@@ -38,13 +38,11 @@ namespace Amy.Grammars.EBNF
                 if (string.IsNullOrEmpty(this._actualDefinition.ProductionRules[i])) continue;
                 string rule = RemoveSpecialChars(this._actualDefinition.ProductionRules[i]);
                 var nonTerminal = GetNonTerminal(rule, productionRules);
-                nonTerminal.OnLeft = true;
                 productionRules.Add(nonTerminal);
             }
 
             string startSymbolRule = RemoveSpecialChars(this._actualDefinition.ProductionRules[0]);
             var startSymbolNonTerminal = GetNonTerminal(startSymbolRule, productionRules);
-            startSymbolNonTerminal.OnLeft = true;
             productionRules.Add(startSymbolNonTerminal);
             var startSymbol = this._actualDefinition.GetStartSymbol(startSymbolNonTerminal, productionRules);
             SetEmptyRules(startSymbol);
@@ -161,7 +159,6 @@ namespace Amy.Grammars.EBNF
                             this._emptyRules.Add(emptyNonTerm);
                             result = emptyNonTerm;
                         }
-                        ((NonTerminal)result).OnLeft = false;
                     }
                     break;
                 case var groupItem when Regex.IsMatch(groupItem, @"[\[\{\(]"):
