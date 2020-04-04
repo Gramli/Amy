@@ -86,7 +86,11 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 result = new List<IExpressionItem>();
                 foreach (var item in this._cache[value])
                 {
-                    result.AddRange(item.Value.ExpressionStructure(item.Key));
+                    var itemExpressionStructure = item.Value.ExpressionStructure(item.Key);
+                    if (itemExpressionStructure != null)
+                    {
+                        result.AddRange(itemExpressionStructure);
+                    }
                 }
             }
             return result;

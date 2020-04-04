@@ -1,7 +1,7 @@
 ﻿using Amy.Exceptions;
 using Amy.Grammars.EBNF.EBNFItems;
 using Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements;
-using Amy.Utils;
+using Amy.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
