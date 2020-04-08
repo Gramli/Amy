@@ -1,4 +1,5 @@
 ﻿using Amy.Caching;
+using Amy.Extensions;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,47 +19,12 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _item;
 
-        private SmartFixedCollection<string> _cache;
+        private SmartFixedCollectionPair<string, HashSet<string>> _cache;
 
         public Repetition(IEBNFItem item, int cacheLength)
         {
             this._item = item;
-            this._cache = new SmartFixedCollection<string>(cacheLength);
-        }
-
-        /// <summary>
-        /// Resolve value using by chars concat
-        /// </summary>
-        /// <returns></returns>
-        public bool IsExpression(string value)
-        {
-            var result = string.IsNullOrEmpty(value) || this._cache.Contains(value);
-            if (!result)
-            {
-                var builder = new StringBuilder();
-                for (var i = 0; i < value.Length -1; i++)
-                {
-                    builder.Append(value[i]);
-                    if (this._item.IsExpression(builder.ToString()))
-                    {
-                        var ii = i + 1;
-                        var restOfValue = value[ii..];
-                        result = IsExpression(restOfValue);
-                        if(result)
-                        {
-                            this._cache.Add(value);
-                        }
-                        break;
-                    }
-                }
-            }
-            if(!result && (this._item.IsExpression(value) && !this._cache.Contains(value)))
-            {
-                this._cache.Add(value);
-                result = true;
-            }
-
-            return result;
+            this._cache = new SmartFixedCollectionPair<string, HashSet<string>>(cacheLength);
         }
 
         /// <summary>
@@ -70,14 +36,117 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return $"{this.Notation}{this._item.Rebuild()}{this.EndNotation}";
         }
 
+        public bool IsExpression(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+
+            if (this._cache.ContainsKey(value))
+            {
+                return true;
+            }
+
+            var builder = new StringBuilder();
+            for (var i = 0; i < value.Length - 1; i++)
+            {
+                var leftValue = builder.Append(value[i]).ToString();
+                if(this._item.IsExpression(leftValue))
+                {
+                    var ii = i + 1;
+                    var rightValue = value[ii..];
+                    var isRightValueExpression = IsExpression(rightValue);
+                    if(isRightValueExpression)
+                    {
+                        Cache(value, leftValue, rightValue);
+                        return true;
+                    }
+
+                }
+
+            }
+
+            if(this._item.IsExpression(value))
+            {
+                Cache(value);
+                return true;
+            }
+
+            return false;
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            IEnumerable<IExpressionItem> result = null;
+            List<IExpressionItem> result = null;
+
             if (IsExpression(value))
             {
-                result = this._item.ExpressionStructure(value);
+                result = new List<IExpressionItem>();
+                foreach (var cacheValue in this._cache[value])
+                {
+                    IEnumerable<IExpressionItem> cacheValueStructure = null;
+
+                    if (this._cache.ContainsKey(cacheValue) && !value.Equals(cacheValue))
+                    {
+                        cacheValueStructure = ExpressionStructure(cacheValue);
+                    }
+                    else
+                    {
+                        cacheValueStructure = this._item.ExpressionStructure(value);
+                    }
+
+                    if (cacheValueStructure != null)
+                    {
+                        result.AddRange(cacheValueStructure);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private IEnumerable<IExpressionItem> ExpressionStructure1(string value)
+        {
+            List<IExpressionItem> result = new List<IExpressionItem>();
+            foreach (var cacheValue in this._cache[value])
+            {
+                var cacheValueStructure = ExpressionStructure1(cacheValue);
+                if (cacheValueStructure != null)
+                {
+                    result.AddRange(cacheValueStructure);
+                }
             }
             return result;
+        }
+
+        private void Cache(string value)
+        {
+            CacheFirstLevelSave(value, 1);
+            CacheSecondLevelSave(value, value);
+        }
+
+        private void Cache(string value, string leftValue, string rightValue)
+        {
+            CacheFirstLevelSave(value, 2);
+            CacheSecondLevelSave(value, leftValue);
+            CacheSecondLevelSave(value, rightValue);
+        }
+
+        private void CacheSecondLevelSave(string value, string childValue)
+        {
+            if (!this._cache[value].Contains(childValue))
+            {
+                this._cache[value].Add(childValue);
+            }
+        }
+
+        private void CacheFirstLevelSave(string value, int capactity)
+        {
+            if (!this._cache.ContainsKey(value))
+            {
+                this._cache.Add(value, new HashSet<string>());
+            }
         }
     }
 }

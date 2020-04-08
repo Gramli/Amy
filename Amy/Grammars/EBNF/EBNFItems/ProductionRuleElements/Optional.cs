@@ -1,5 +1,7 @@
 ﻿using Amy.Caching;
+using Amy.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -29,19 +31,6 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         }
 
         /// <summary>
-        /// Resolve value by rule item
-        /// </summary>
-        public bool IsExpression(string value)
-        {
-            var result = this._item.IsExpression(value);
-            if (result)
-            {
-                this._cache.Add(value);
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Rebuild Optional rule with item like is defined in grammar
         /// </summary>
         /// <returns></returns>
@@ -50,9 +39,26 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return $"{this.Notation}{this._item.Rebuild()}{this.EndNotation}";
         }
 
+        public bool IsExpression(string value)
+        {
+            if (string.IsNullOrEmpty(value) || this._cache.Contains(value))
+            {
+                return true;
+            }
+
+            if (this._item.IsExpression(value))
+            {
+                this._cache.Add(value);
+                return true;
+            }
+
+            return false;
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IEnumerable<IExpressionItem> result = null;
+
             if (IsExpression(value))
             {
                 result = this._item.ExpressionStructure(value);

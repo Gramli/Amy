@@ -37,24 +37,6 @@ namespace Amy.Grammars.EBNF
         }
 
         /// <summary>
-        /// Determines that value is grammar start symbol expression
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public bool IsExpression(string value)
-        {
-            return this._startSymbolNonTerminal.IsExpression(value);
-        }
-
-        /// <summary>
-        /// Check value by nonTerminal rule. NonTerminal is selected by name
-        /// </summary>
-        public bool IsNonTerminal(string nonTerminalName, string value)
-        {
-            return this._productionRules[nonTerminalName].IsExpression(value);
-        }
-
-        /// <summary>
         /// Retunrs nonTerminal by name
         /// </summary>
         INonTerminal IStartSymbol.GetNonTerminal(string name)

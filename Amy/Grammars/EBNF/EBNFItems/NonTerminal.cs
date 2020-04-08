@@ -1,5 +1,6 @@
 ﻿using Amy.Caching;
 using Amy.Exceptions;
+using Amy.Extensions;
 using System;
 using System.Collections.Generic;
 
@@ -55,37 +56,28 @@ namespace Amy.Grammars.EBNF.EBNFItems
             return $"{this.Name}";
         }
 
-        /// <summary>
-        /// Resolve value using right side rule
-        /// </summary>
         public bool IsExpression(string value)
         {
-            if (this._rightSide == null)
-                throw new GrammarParseException($"Right side rule of NonTerminal: {this.Name} is null.", new NullReferenceException());
-            var result = this._rightSide.IsExpression(value) || this._cache.Contains(value);
-
-            if (result && !this._cache.Contains(value))
-            {
-                this._cache.Add(value);
-            }
-            return result;
+            return this._rightSide.IsExpression(value);
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IExpressionItem[] result = null;
+            if (this._rightSide == null)
+                throw new GrammarParseException($"Right side rule of NonTerminal: {this.Name} is null.", new NullReferenceException());
 
-            var isExpression = IsExpression(value);
-            if (isExpression)
+            if (IsExpression(value))
             {
-                var resultItem = new GrammarExpressionItem()
+                result = new IExpressionItem[]
                 {
-                    Item = this,
-                    Expression = value,
-                    Childs = this._rightSide.ExpressionStructure(value)
+                    new GrammarExpressionItem()
+                    {
+                        Item = this,
+                        Expression = value,
+                        Childs = this._rightSide.ExpressionStructure(value)
+                    }
                 };
-
-                result = new IExpressionItem[] { resultItem };
             }
 
             return result;

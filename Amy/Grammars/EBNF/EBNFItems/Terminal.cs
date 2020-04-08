@@ -17,14 +17,6 @@ namespace Amy.Grammars.EBNF.EBNFItems
         }
 
         /// <summary>
-        /// Resolve value using string.Equals
-        /// </summary>
-        public bool IsExpression(string value)
-        {
-            return this.Expression.Equals(value);
-        }
-
-        /// <summary>
         /// Returns terminal in grammar
         /// </summary>
         /// <returns></returns>
@@ -33,12 +25,16 @@ namespace Amy.Grammars.EBNF.EBNFItems
             return $"\"{this.Expression}\"";
         }
 
+        public bool IsExpression(string value)
+        {
+            return this.Expression.Equals(value);
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IExpressionItem[] result = null;
 
-            var isExpression = IsExpression(value);
-            if (isExpression)
+            if (IsExpression(value))
             {
                 var resultItem = new GrammarExpressionItem()
                 {

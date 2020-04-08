@@ -16,9 +16,6 @@
         /// </summary>
         bool IsOptional { get; }
 
-        /// <summary>
-        /// Determines that value is 
-        /// </summary>
         bool IsExpression(string value);
     }
 }

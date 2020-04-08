@@ -1,5 +1,6 @@
 ﻿using Amy.Caching;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -26,73 +27,93 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             this._cache = new SmartFixedCollectionPair<string, Dictionary<string, IEBNFItem>>(cacheLength);
         }
 
-        /// <summary>
-        /// Resolve value using char concat
-        /// </summary>
-        /// <returns></returns>
         public bool IsExpression(string value)
         {
-            var result = this._cache.ContainsKey(value);
-            var isNullOrEmpty = string.IsNullOrEmpty(value);
-            //its much faster to check value by character than check full value, thats why full value checking is at end
-            if (!isNullOrEmpty && !result)
+            if (string.IsNullOrEmpty(value))
             {
-                var actualValue = string.Empty;
-                for (int i = 0; i < value.Length - 1; i++)
+                return false;
+            }
+            
+            if (this._cache.ContainsKey(value))
+            {
+                return true;
+            }
+
+            var leftValueBuilder = new StringBuilder();
+            for (int i = 0; i < value.Length - 1; i++)
+            {
+                var leftValue = leftValueBuilder.Append(value[i]).ToString();
+                var ii = i + 1;
+                var rightValue = value[ii..];
+                if (this._left.IsExpression(leftValue) && this._right.IsExpression(rightValue))
                 {
-                    actualValue += value[i];
-                    var ii = i + 1;
-                    var restOfValue = value[ii..];
-                    if (this._left.IsExpression(actualValue) && this._right.IsExpression(restOfValue))
-                    {
-                        result = true;
-                        this._cache.Add(value, new Dictionary<string, IEBNFItem>(2));
-                        this._cache[value].Add(actualValue, this._left);
-                        this._cache[value].Add(restOfValue, this._right);
-                        break;
-                    }
+                    Cache(value, leftValue, rightValue);
+                    return true;
                 }
             }
 
-            if (!result)
+
+            if (this._right.IsOptional && this._left.IsExpression(value))
             {
-                result = isNullOrEmpty && this._left.IsOptional && this._right.IsOptional;
-                if (!result && this._right.IsOptional && this._left.IsExpression(value))
-                {
-                    result = true;
-                    AddOneDictionaryItemToCache(value, this._left);
-                }
-                else if (!result && this._left.IsOptional && this._right.IsExpression(value))
-                {
-                    result = true;
-                    AddOneDictionaryItemToCache(value, this._right);
-                }
+                Cache(value, this._left);
+                return true;
+            }
+            
+            if (this._left.IsOptional && this._right.IsExpression(value))
+            {
+                Cache(value, this._right);
+                return true;
             }
 
-            return result;
+            return false;
         }
 
-        private void AddOneDictionaryItemToCache(string value, IEBNFItem item)
+        private void Cache(string value, IEBNFItem item)
         {
-            this._cache.Add(value, new Dictionary<string, IEBNFItem>(1));
-            this._cache[value].Add(value, item);
+            CacheFirstLevelSave(value, 1);
+            CacheSecondLevelSave(value, value, item);
+        }
+
+        private void Cache(string value, string leftValue, string rightValue)
+        {
+            CacheFirstLevelSave(value, 2);
+            CacheSecondLevelSave(value, leftValue, this._left);
+            CacheSecondLevelSave(value, rightValue, this._right);
+        }
+
+        private void CacheSecondLevelSave(string value, string childValue, IEBNFItem item)
+        {
+            if (!this._cache[value].ContainsKey(childValue))
+            {
+                this._cache[value].Add(childValue, item);
+            }
+        }
+
+        private void CacheFirstLevelSave(string value, int capactity)
+        {
+            if (!this._cache.ContainsKey(value))
+            {
+                this._cache.Add(value, new Dictionary<string, IEBNFItem>(capactity));
+            }
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             List<IExpressionItem> result = null;
+
             if (IsExpression(value))
             {
                 result = new List<IExpressionItem>();
-                foreach (var item in this._cache[value])
+                foreach (var cacheValue in this._cache[value])
                 {
-                    var itemExpressionStructure = item.Value.ExpressionStructure(item.Key);
-                    if (itemExpressionStructure != null)
+                    var cacheValueStructure = cacheValue.Value.ExpressionStructure(cacheValue.Key);
+                    if (cacheValueStructure != null)
                     {
-                        result.AddRange(itemExpressionStructure);
+                        result.AddRange(cacheValueStructure);
                     }
                 }
             }
+
             return result;
         }
 

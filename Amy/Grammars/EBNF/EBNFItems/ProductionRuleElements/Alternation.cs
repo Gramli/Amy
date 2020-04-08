@@ -1,5 +1,7 @@
 ﻿using Amy.Caching;
+using Amy.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -28,25 +30,6 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         }
 
         /// <summary>
-        /// Resolve value. True if left item or right item
-        /// </summary>
-        public bool IsExpression(string value)
-        {
-            var result = this._cache.Contains(value);
-            if (!result && this._left.IsExpression(value))
-            {
-                result = true;
-                this._cache.Add(value, this._left);
-            }
-            else if (!result && this._right.IsExpression(value))
-            {
-                result = true;
-                this._cache.Add(value, this._right);
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Rebuild Alternation rule with left and right item like is defined in grammar
         /// </summary>
         /// <returns></returns>
@@ -55,14 +38,48 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return $"{this._left.Rebuild()}{this.Notation}{this._right.Rebuild()}";
         }
 
+        public bool IsExpression(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+
+            if (this._cache.ContainsKey(value))
+            {
+                return true;
+            }
+
+            if(this._left.IsExpression(value))
+            {
+                Cache(value, this._left);
+                return true;
+            }
+
+            if(this._right.IsExpression(value))
+            {
+                Cache(value, this._right);
+                return true;
+            }
+
+            return false;
+
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IEnumerable<IExpressionItem> result = null;
-            if (IsExpression(value))
+            if(IsExpression(value))
             {
                 result = this._cache[value].ExpressionStructure(value);
             }
             return result;
+        }
+
+        private void Cache(string value, IEBNFItem item)
+        {
+            if (!this._cache.ContainsKey(value))
+                this._cache.Add(value, item);
         }
     }
 }

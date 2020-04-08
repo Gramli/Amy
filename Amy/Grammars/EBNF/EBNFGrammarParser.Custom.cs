@@ -32,7 +32,6 @@ namespace Amy.Grammars.EBNF
 
             var productionRules = new List<NonTerminal>();
 
-            //var productionRulesStrings = SplitByTermination(grammar).Reverse().ToArray();
             for (var i = this._actualDefinition.ProductionRules.Length - 1; i > 0; i--)
             {
                 if (string.IsNullOrEmpty(this._actualDefinition.ProductionRules[i])) continue;
