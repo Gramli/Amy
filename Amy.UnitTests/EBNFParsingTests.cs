@@ -3,6 +3,7 @@ using Amy.Grammars.EBNF;
 using Amy.Grammars.EBNF.EBNFItems;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Collections.Generic;
 
 namespace Amy.UnitTests
 {
@@ -48,6 +49,12 @@ namespace Amy.UnitTests
                 return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
             });
 
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
+            {
+                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
+            });
+
             this.parser.Parse(definitionMock.Object);
         }
 
@@ -81,6 +88,12 @@ namespace Amy.UnitTests
                 return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
             });
 
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
+            {
+                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
+            });
+
             this.parser.Parse(definitionMock.Object);
         }
 
@@ -96,10 +109,11 @@ namespace Amy.UnitTests
                 {
                     this.definition.Character.Substring(0, this.definition.Character.Length-1)
                 });
-            definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
-                {
-                    return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
-                });
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
+            {
+                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
+            });
 
             this.parser.Parse(definitionMock.Object);
         }
@@ -116,9 +130,10 @@ namespace Amy.UnitTests
                 {
                     this.definition.Digit.Replace("|", string.Empty)
                 });
-            definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
             {
-                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
+                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
             });
 
             this.parser.Parse(definitionMock.Object);

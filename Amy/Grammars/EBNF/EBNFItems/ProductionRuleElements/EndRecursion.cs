@@ -22,6 +22,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsOptional => false;
 
+        public int MinimalLength => 1;
         public string Notation => "ε";
 
         /// <summary>

@@ -1,7 +1,5 @@
 ﻿using Amy.Caching;
-using Amy.Extensions;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -15,6 +13,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         public string Notation => Repetition.notation;
         public string EndNotation => Repetition.endNotation;
 
+        public int MinimalLength => 0;
         public bool IsOptional => true;
 
         private readonly IEBNFItem _item;
@@ -38,36 +37,30 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(string value)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value) || this._cache.ContainsKey(value))
             {
                 return true;
             }
 
-            if (this._cache.ContainsKey(value))
-            {
-                return true;
-            }
-
-            var builder = new StringBuilder();
+            var leftValue = string.Empty;
             for (var i = 0; i < value.Length - 1; i++)
             {
-                var leftValue = builder.Append(value[i]).ToString();
-                if(this._item.IsExpression(leftValue))
+                leftValue += value[i];
+                if (this._item.IsExpression(leftValue))
                 {
                     var ii = i + 1;
                     var rightValue = value[ii..];
                     var isRightValueExpression = IsExpression(rightValue);
-                    if(isRightValueExpression)
+                    if (isRightValueExpression)
                     {
                         Cache(value, leftValue, rightValue);
                         return true;
                     }
-
                 }
 
             }
 
-            if(this._item.IsExpression(value))
+            if (this._item.IsExpression(value))
             {
                 Cache(value);
                 return true;
@@ -106,20 +99,6 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return result;
         }
 
-        private IEnumerable<IExpressionItem> ExpressionStructure1(string value)
-        {
-            List<IExpressionItem> result = new List<IExpressionItem>();
-            foreach (var cacheValue in this._cache[value])
-            {
-                var cacheValueStructure = ExpressionStructure1(cacheValue);
-                if (cacheValueStructure != null)
-                {
-                    result.AddRange(cacheValueStructure);
-                }
-            }
-            return result;
-        }
-
         private void Cache(string value)
         {
             CacheFirstLevelSave(value, 1);
@@ -145,7 +124,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         {
             if (!this._cache.ContainsKey(value))
             {
-                this._cache.Add(value, new HashSet<string>());
+                this._cache.Add(value, new HashSet<string>(capactity));
             }
         }
     }

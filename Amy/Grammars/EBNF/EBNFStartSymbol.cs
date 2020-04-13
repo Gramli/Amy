@@ -1,6 +1,7 @@
 ﻿using Amy.Exceptions;
 using Amy.Grammars.EBNF.EBNFItems;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Amy.Grammars.EBNF
 {
@@ -49,6 +50,11 @@ namespace Amy.Grammars.EBNF
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             return this._startSymbolNonTerminal.ExpressionStructure(value);
+        }
+
+        public bool IsExpression(string value)
+        {
+            return ((IEBNFItem)this.Rule).IsExpression(value);
         }
     }
 }

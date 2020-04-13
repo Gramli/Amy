@@ -1,7 +1,5 @@
 ﻿using Amy.Caching;
-using Amy.Extensions;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -14,7 +12,9 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         public string Notation => Grouping.notation;
         public string EndNotation => Grouping.endNotation;
 
-        public bool IsOptional => _item.IsOptional;
+        public bool IsOptional { get; private set; }
+
+        public int MinimalLength { get; private set; }
 
         private readonly IEBNFItem _item;
 
@@ -24,6 +24,8 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         {
             this._item = item;
             this._cache = new SmartFixedCollection<string>(cacheLength);
+            this.MinimalLength = this._item.MinimalLength;
+            this.IsOptional = this._item.IsOptional;
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 return true;
             }
 
-            if(this._item.IsExpression(value))
+            if(value.Length >= this.MinimalLength && this._item.IsExpression(value))
             {
                 this._cache.Add(value);
                 return true;

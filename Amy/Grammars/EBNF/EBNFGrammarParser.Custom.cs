@@ -15,20 +15,20 @@ namespace Amy.Grammars.EBNF
     /// </summary>
     public class EBNFGrammarParserCustom : IFormalGrammarParser
     {
-        private readonly List<NonTerminal> _emptyRules;
+        //private readonly List<NonTerminal> _emptyRules;
         private EBNFGrammarDefinition _actualDefinition;
         private const string _termination = ";";
         private int _cacheLength;
         public EBNFGrammarParserCustom(int cacheLength)
         {
-            this._emptyRules = new List<NonTerminal>();
+            //this._emptyRules = new List<NonTerminal>();
             this._cacheLength = cacheLength;
         }
 
         public IStartSymbol Parse(IFormalGrammarDefinition definition)
         {
             this._actualDefinition = (EBNFGrammarDefinition)definition;
-            this._emptyRules.Clear();
+            //this._emptyRules.Clear();
 
             var productionRules = new List<NonTerminal>();
 
@@ -44,7 +44,7 @@ namespace Amy.Grammars.EBNF
             var startSymbolNonTerminal = GetNonTerminal(startSymbolRule, productionRules);
             productionRules.Add(startSymbolNonTerminal);
             var startSymbol = this._actualDefinition.GetStartSymbol(startSymbolNonTerminal, productionRules);
-            SetEmptyRules(startSymbol);
+            //SetEmptyRules(startSymbol);
             return startSymbol;
         }
 
@@ -53,14 +53,14 @@ namespace Amy.Grammars.EBNF
             return rule.RemoveSpaces().RemoveNewLines();
         }
 
-        private void SetEmptyRules(IStartSymbol startSymbol)
-        {
-            foreach (var rule in this._emptyRules)
-            {
-                IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Name);
-                rule.SetRightSide(item);
-            }
-        }
+        //private void SetEmptyRules(IStartSymbol startSymbol)
+        //{
+        //    foreach (var rule in this._emptyRules)
+        //    {
+        //        IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Name);
+        //        rule.SetRightSide(item);
+        //    }
+        //}
 
         private NonTerminal GetNonTerminal(string productionRule, List<NonTerminal> listOfExistedTerminals)
         {
@@ -155,7 +155,7 @@ namespace Amy.Grammars.EBNF
                         if (result == null)
                         {
                             var emptyNonTerm = this._actualDefinition.GetNewNonTerminalInstance(builder.ToString());
-                            this._emptyRules.Add(emptyNonTerm);
+                            //this._emptyRules.Add(emptyNonTerm);
                             result = emptyNonTerm;
                         }
                     }

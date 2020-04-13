@@ -1,6 +1,5 @@
 ﻿using Amy.Caching;
 using Amy.Exceptions;
-using Amy.Extensions;
 using System;
 using System.Collections.Generic;
 
@@ -19,10 +18,9 @@ namespace Amy.Grammars.EBNF.EBNFItems
         private IEBNFItem _rightSide;
 
         public IFormalGrammarItem Rule => this._rightSide;
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsOptional => this._rightSide.IsOptional;
+        public bool IsOptional { get; private set; }
+
+        public int MinimalLength { get; private set; }
         /// <summary>
         /// NonTerminal Name, left side of definition
         /// </summary>
@@ -46,6 +44,8 @@ namespace Amy.Grammars.EBNF.EBNFItems
         internal void SetRightSide(IEBNFItem item)
         {
             this._rightSide = item;
+            this.MinimalLength = item.MinimalLength;
+            this.IsOptional = this._rightSide.IsOptional;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public bool IsExpression(string value)
         {
-            return this._rightSide.IsExpression(value);
+            return value.Length >= this.MinimalLength && this._rightSide.IsExpression(value);
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)

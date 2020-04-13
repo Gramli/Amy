@@ -1,6 +1,5 @@
 ﻿using Amy.Caching;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -12,7 +11,9 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         public const string notation = ",";
         public string Notation => Concatenation.notation;
 
-        public bool IsOptional => this._left.IsOptional && this._right.IsOptional;
+        public bool IsOptional { get; private set; }
+
+        public int MinimalLength { get; private set; }
 
         private readonly IEBNFItem _left;
 
@@ -25,11 +26,13 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             this._left = left;
             this._right = right;
             this._cache = new SmartFixedCollectionPair<string, Dictionary<string, IEBNFItem>>(cacheLength);
+            this.MinimalLength = this._left.MinimalLength + this._right.MinimalLength;
+            this.IsOptional = this._left.IsOptional && this._right.IsOptional;
         }
 
         public bool IsExpression(string value)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value) || value.Length < this.MinimalLength)
             {
                 return false;
             }
@@ -39,10 +42,10 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 return true;
             }
 
-            var leftValueBuilder = new StringBuilder();
+            var leftValue = string.Empty;
             for (int i = 0; i < value.Length - 1; i++)
             {
-                var leftValue = leftValueBuilder.Append(value[i]).ToString();
+                leftValue += value[i];
                 var ii = i + 1;
                 var rightValue = value[ii..];
                 if (this._left.IsExpression(leftValue) && this._right.IsExpression(rightValue))
@@ -52,13 +55,12 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 }
             }
 
-
             if (this._right.IsOptional && this._left.IsExpression(value))
             {
                 Cache(value, this._left);
                 return true;
             }
-            
+
             if (this._left.IsOptional && this._right.IsExpression(value))
             {
                 Cache(value, this._right);

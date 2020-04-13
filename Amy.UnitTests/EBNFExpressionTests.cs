@@ -51,7 +51,13 @@ namespace Amy.UnitTests
                 return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
             });
 
-            var symbol = this.parser.Parse(definitionMock.Object);
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
+            {
+                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
+            });
+
+            var symbol = (EBNFStartSymbol)this.parser.Parse(definitionMock.Object);
 
             var variableExp = "int a=12;";
             var variableExp1 = "bool b=true;";
@@ -91,6 +97,12 @@ namespace Amy.UnitTests
                 return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
             });
 
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+                (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
+                {
+                    return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
+                });
+
             var symbol = this.parser.Parse(definitionMock.Object);
 
             var variableExp = "int a=12;";
@@ -104,8 +116,8 @@ namespace Amy.UnitTests
             Assert.IsInstanceOfType(prgItem.Item, typeof(NonTerminal));
 
             var varStructure = symbol.ExpressionStructure($"{variableExp1}{variableExp}");
-            Assert.AreEqual(2, varStructure.Count());
-            foreach(var item in varStructure)
+            Assert.AreEqual(1, varStructure.Count());
+            foreach(var item in varStructure.Single().Childs)
             {
                 Assert.IsInstanceOfType(item.Item, typeof(NonTerminal));
                 Assert.AreEqual("variable", ((NonTerminal)item.Item).Name);
@@ -141,11 +153,16 @@ namespace Amy.UnitTests
                 return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
             });
 
+            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
+            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
+            {
+                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
+            });
+
+            var symbol = this.parser.Parse(definitionMock.Object);
 
             TimeSpan timeResult = Time(() =>
             {
-                var symbol = this.parser.Parse(definitionMock.Object);
-
                 var variableExp = "int a=12;";
                 var variableExp1 = "bool b=true;";
                 var variableExp2 = "bool b=false;";

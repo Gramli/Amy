@@ -11,6 +11,8 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public string Expression { get; private set; }
 
+        public int MinimalLength => this.Expression.Length;
+
         public Terminal(string value)
         {
             this.Expression = value;
