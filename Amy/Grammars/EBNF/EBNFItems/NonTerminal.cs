@@ -26,16 +26,13 @@ namespace Amy.Grammars.EBNF.EBNFItems
         /// </summary>
         public string Name { get; private set; }
 
-        private readonly SmartFixedCollection<string> _cache;
-
         /// <summary>
         /// Allow to inicialize only name with set rule later
         /// </summary>
         /// <param name="name"></param>
-        protected NonTerminal(string name, int cacheLength)
+        protected NonTerminal(string name)
         {
             this.Name = name;
-            this._cache = new SmartFixedCollection<string>(cacheLength);
         }
 
         /// <summary>

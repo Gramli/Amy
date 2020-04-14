@@ -1,5 +1,7 @@
-﻿using Amy.Caching;
+﻿using System;
+using Amy.Caching;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -48,8 +50,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 leftValue += value[i];
                 if (this._item.IsExpression(leftValue))
                 {
-                    var ii = i + 1;
-                    var rightValue = value[ii..];
+                    var rightValue = value[(i+1)..];
                     var isRightValueExpression = IsExpression(rightValue);
                     if (isRightValueExpression)
                     {
@@ -75,7 +76,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
             if (IsExpression(value))
             {
-                result = new List<IExpressionItem>();
+                result = new List<IExpressionItem>(25);
                 foreach (var cacheValue in this._cache[value])
                 {
                     IEnumerable<IExpressionItem> cacheValueStructure = null;
@@ -86,7 +87,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                     }
                     else
                     {
-                        cacheValueStructure = this._item.ExpressionStructure(value);
+                        cacheValueStructure = this._item.ExpressionStructure(cacheValue);
                     }
 
                     if (cacheValueStructure != null)
@@ -114,18 +115,12 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private void CacheSecondLevelSave(string value, string childValue)
         {
-            if (!this._cache[value].Contains(childValue))
-            {
-                this._cache[value].Add(childValue);
-            }
+            this._cache[value].Add(childValue);
         }
 
-        private void CacheFirstLevelSave(string value, int capactity)
+        private void CacheFirstLevelSave(string value, int capacity)
         {
-            if (!this._cache.ContainsKey(value))
-            {
-                this._cache.Add(value, new HashSet<string>(capactity));
-            }
+            this._cache.TryAdd(value, new HashSet<string>(capacity));
         }
     }
 }

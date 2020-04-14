@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Amy.Caching
 {
-    public abstract class UsageFixedCollection<K> where K : class
+    public abstract class UsageFixedCollection<K>
     {
         private Dictionary<K, int> _usage;
         private int _length;

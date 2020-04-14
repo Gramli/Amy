@@ -11,6 +11,9 @@ namespace Amy
 
         IFormalGrammarItem Item { get; }
 
+        //TODO DAN pouzivat nejrychlejsi kolekci - nemusi byt nutne IEnumerable
+        //TODO DAN pred alokovavat
+        //TODO DAN misto addrange zkusit add s for!!
         IEnumerable<IExpressionItem> Childs { get; }
     }
 }

@@ -20,7 +20,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _item;
 
-        private SmartFixedCollection<string> _cache;
+        private readonly SmartFixedCollection<string> _cache;
 
 
         public Optional(IEBNFItem item, int cacheLength)

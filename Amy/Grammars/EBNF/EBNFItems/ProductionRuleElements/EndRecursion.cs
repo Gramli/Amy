@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {

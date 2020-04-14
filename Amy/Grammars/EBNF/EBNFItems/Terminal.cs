@@ -41,7 +41,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
                 var resultItem = new GrammarExpressionItem()
                 {
                     Item = this,
-                    Expression = value,
+                    Expression = value
                 };
 
                 result = new IExpressionItem[] { resultItem };

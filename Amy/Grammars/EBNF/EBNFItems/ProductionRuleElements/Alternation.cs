@@ -20,7 +20,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private SmartFixedCollectionPair<string, IEBNFItem> _cache;
+        private readonly SmartFixedCollectionPair<string, IEBNFItem> _cache;
 
         public Alternation(IEBNFItem left, IEBNFItem right, int cacheLength)
         {
@@ -52,13 +52,13 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 return true;
             }
 
-            if(this._left.IsExpression(value))
+            if (this._left.IsExpression(value))
             {
                 Cache(value, this._left);
                 return true;
             }
 
-            if(this._right.IsExpression(value))
+            if (this._right.IsExpression(value))
             {
                 Cache(value, this._right);
                 return true;
@@ -71,7 +71,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IEnumerable<IExpressionItem> result = null;
-            if(IsExpression(value))
+            if (IsExpression(value))
             {
                 result = this._cache[value].ExpressionStructure(value);
             }
@@ -80,8 +80,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private void Cache(string value, IEBNFItem item)
         {
-            if (!this._cache.ContainsKey(value))
-                this._cache.Add(value, item);
+            this._cache.TryAdd(value, item);
         }
     }
 }

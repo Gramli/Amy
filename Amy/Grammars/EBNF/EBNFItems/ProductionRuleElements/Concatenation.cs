@@ -1,5 +1,6 @@
 ﻿using Amy.Caching;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -43,11 +44,10 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             }
 
             var leftValue = string.Empty;
-            for (int i = 0; i < value.Length - 1; i++)
+            for (var i = 0; i < value.Length - 1; i++)
             {
                 leftValue += value[i];
-                var ii = i + 1;
-                var rightValue = value[ii..];
+                var rightValue = value[(i+1)..];
                 if (this._left.IsExpression(leftValue) && this._right.IsExpression(rightValue))
                 {
                     Cache(value, leftValue, rightValue);
@@ -85,18 +85,13 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private void CacheSecondLevelSave(string value, string childValue, IEBNFItem item)
         {
-            if (!this._cache[value].ContainsKey(childValue))
-            {
-                this._cache[value].Add(childValue, item);
-            }
+            this._cache[value].TryAdd(childValue, item);
         }
 
-        private void CacheFirstLevelSave(string value, int capactity)
+        private void CacheFirstLevelSave(string value, int capacity)
         {
-            if (!this._cache.ContainsKey(value))
-            {
-                this._cache.Add(value, new Dictionary<string, IEBNFItem>(capactity));
-            }
+            this._cache.TryAdd(value, new Dictionary<string, IEBNFItem>(capacity));
+
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
@@ -105,7 +100,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
             if (IsExpression(value))
             {
-                result = new List<IExpressionItem>();
+                result = new List<IExpressionItem>(25);
                 foreach (var cacheValue in this._cache[value])
                 {
                     var cacheValueStructure = cacheValue.Value.ExpressionStructure(cacheValue.Key);

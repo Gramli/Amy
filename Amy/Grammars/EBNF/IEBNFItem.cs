@@ -1,4 +1,4 @@
-﻿using System.Threading;
+﻿using System;
 
 namespace Amy.Grammars.EBNF
 {

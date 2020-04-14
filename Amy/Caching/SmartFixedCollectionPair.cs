@@ -5,7 +5,7 @@ using System;
 
 namespace Amy.Caching
 {
-    public class SmartFixedCollectionPair<K, V> : UsageFixedCollection<K>, IDictionary<K, V> where K : class
+    public class SmartFixedCollectionPair<K, V> : UsageFixedCollection<K>, IDictionary<K, V>
     {
         public V this[K i]
         {
