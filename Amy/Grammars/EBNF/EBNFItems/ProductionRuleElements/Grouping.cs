@@ -1,4 +1,5 @@
-﻿using Amy.Caching;
+﻿using System;
+using Amy.Caching;
 using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
@@ -18,12 +19,9 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _item;
 
-        private readonly SmartFixedCollection<string> _cache;
-
-        public Grouping(IEBNFItem item, int cacheLength)
+        public Grouping(IEBNFItem item)
         {
             this._item = item;
-            this._cache = new SmartFixedCollection<string>(cacheLength);
             this.MinimalLength = this._item.MinimalLength;
             this.IsOptional = this._item.IsOptional;
         }
@@ -39,29 +37,21 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(string value)
         {
-            if (string.IsNullOrEmpty(value) || this._cache.Contains(value))
-            {
-                return true;
-            }
+            return this._item.IsExpression(value);
+        }
 
-            if(value.Length >= this.MinimalLength && this._item.IsExpression(value))
-            {
-                this._cache.Add(value);
-                return true;
-            }
-
+        public bool IsExpression(ReadOnlyMemory<char> value)
+        {
             return false;
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            IEnumerable<IExpressionItem> result = null;
-
             if (IsExpression(value))
             {
-                result = this._item.ExpressionStructure(value);
+                return this._item.ExpressionStructure(value);
             }
-            return result;
+            return null;
         }
 
     }

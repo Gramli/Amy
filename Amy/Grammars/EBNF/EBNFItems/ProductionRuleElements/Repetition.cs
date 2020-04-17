@@ -1,7 +1,6 @@
 ﻿using System;
 using Amy.Caching;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -20,12 +19,12 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _item;
 
-        private SmartFixedCollectionPair<string, HashSet<string>> _cache;
+        private readonly SmartFixedCollectionPair<string, string[]> _cache;
 
         public Repetition(IEBNFItem item, int cacheLength)
         {
             this._item = item;
-            this._cache = new SmartFixedCollectionPair<string, HashSet<string>>(cacheLength);
+            this._cache = new SmartFixedCollectionPair<string, string[]>(cacheLength);
         }
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(string value)
         {
-            if (string.IsNullOrEmpty(value) || this._cache.ContainsKey(value))
+            if (this._cache.ContainsKey(value))
             {
                 return true;
             }
@@ -70,57 +69,44 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return false;
         }
 
+        public bool IsExpression(ReadOnlyMemory<char> value)
+        {
+            return false;
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            List<IExpressionItem> result = null;
-
             if (IsExpression(value))
             {
-                result = new List<IExpressionItem>(25);
-                foreach (var cacheValue in this._cache[value])
+                var items = this._cache[value];
+                if (items.Length == 0)
                 {
-                    IEnumerable<IExpressionItem> cacheValueStructure = null;
-
-                    if (this._cache.ContainsKey(cacheValue) && !value.Equals(cacheValue))
-                    {
-                        cacheValueStructure = ExpressionStructure(cacheValue);
-                    }
-                    else
-                    {
-                        cacheValueStructure = this._item.ExpressionStructure(cacheValue);
-                    }
-
-                    if (cacheValueStructure != null)
-                    {
-                        result.AddRange(cacheValueStructure);
-                    }
+                    return this._item.ExpressionStructure(value);
                 }
+
+                var result = new List<IExpressionItem>(25);
+                foreach (var item in items)
+                {
+                    if (item == null) continue;
+                    result.AddRange(ExpressionStructure(item));
+                }
+                return result;
             }
 
-            return result;
+            return null;
         }
 
         private void Cache(string value)
         {
-            CacheFirstLevelSave(value, 1);
-            CacheSecondLevelSave(value, value);
+            //it has to be empty, because value cannot be null
+            this._cache.TryAdd(value, new string[0]);
         }
 
         private void Cache(string value, string leftValue, string rightValue)
         {
-            CacheFirstLevelSave(value, 2);
-            CacheSecondLevelSave(value, leftValue);
-            CacheSecondLevelSave(value, rightValue);
-        }
-
-        private void CacheSecondLevelSave(string value, string childValue)
-        {
-            this._cache[value].Add(childValue);
-        }
-
-        private void CacheFirstLevelSave(string value, int capacity)
-        {
-            this._cache.TryAdd(value, new HashSet<string>(capacity));
+            this._cache.TryAdd(value, new string[2]);
+            this._cache[value][0] = leftValue;
+            this._cache[value][1] = rightValue;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,12 +6,12 @@ namespace Amy.Caching
 {
     public abstract class UsageFixedCollection<K>
     {
-        private Dictionary<K, int> _usage;
-        private int _length;
+        private readonly Dictionary<K, int> _usage;
+        private readonly int _length;
 
-        protected bool _full { get { return this._usage.Count == this._length; } }
+        protected bool _full => this._usage.Count == this._length;
 
-        public UsageFixedCollection(int length)
+        protected UsageFixedCollection(int length)
         {
             this._length = length;
             this._usage = new Dictionary<K, int>();
@@ -20,6 +19,7 @@ namespace Amy.Caching
 
         protected K GetKeyToRemove()
         {
+            //TODO DAN sort items clever
             return this._usage.OrderBy(x => x.Value).First().Key;
         }
 

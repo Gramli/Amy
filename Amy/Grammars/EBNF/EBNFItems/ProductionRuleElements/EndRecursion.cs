@@ -34,6 +34,11 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return true;
         }
 
+        public bool IsExpression(ReadOnlyMemory<char> value)
+        {
+            return true;
+        }
+
         /// <summary>
         /// Returns notation
         /// </summary>

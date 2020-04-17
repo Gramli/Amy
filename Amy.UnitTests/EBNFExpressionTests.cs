@@ -48,7 +48,7 @@ namespace Amy.UnitTests
                 }).Reverse().ToArray());
             definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
             {
-                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
+                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str).Object;
             });
 
             definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
@@ -94,7 +94,7 @@ namespace Amy.UnitTests
                 }).Reverse().ToArray());
             definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
             {
-                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
+                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str).Object;
             });
 
             definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
@@ -150,7 +150,7 @@ namespace Amy.UnitTests
                 }).Reverse().ToArray());
             definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
             {
-                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
+                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str).Object;
             });
 
             definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
@@ -158,11 +158,10 @@ namespace Amy.UnitTests
             {
                 return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
             });
-
-            var symbol = this.parser.Parse(definitionMock.Object);
-
-            TimeSpan timeResult = Time(() =>
+            
+            var timeResult = Time(() =>
             {
+                var symbol = this.parser.Parse(definitionMock.Object);
                 var variableExp = "int a=12;";
                 var variableExp1 = "bool b=true;";
                 var variableExp2 = "bool b=false;";

@@ -1,6 +1,6 @@
 ﻿using Amy.Caching;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -20,24 +20,24 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private SmartFixedCollectionPair<string, Dictionary<string, IEBNFItem>> _cache;
+        private readonly SmartFixedCollectionPair<string, CacheItem[]> _cache;
 
         public Concatenation(IEBNFItem left, IEBNFItem right, int cacheLength)
         {
             this._left = left;
             this._right = right;
-            this._cache = new SmartFixedCollectionPair<string, Dictionary<string, IEBNFItem>>(cacheLength);
+            this._cache = new SmartFixedCollectionPair<string, CacheItem[]>(cacheLength);
             this.MinimalLength = this._left.MinimalLength + this._right.MinimalLength;
             this.IsOptional = this._left.IsOptional && this._right.IsOptional;
         }
 
         public bool IsExpression(string value)
         {
-            if (string.IsNullOrEmpty(value) || value.Length < this.MinimalLength)
+            if (value.Length < this.MinimalLength)
             {
                 return false;
             }
-            
+
             if (this._cache.ContainsKey(value))
             {
                 return true;
@@ -47,7 +47,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             for (var i = 0; i < value.Length - 1; i++)
             {
                 leftValue += value[i];
-                var rightValue = value[(i+1)..];
+                var rightValue = value[(i + 1)..];
                 if (this._left.IsExpression(leftValue) && this._right.IsExpression(rightValue))
                 {
                     Cache(value, leftValue, rightValue);
@@ -57,61 +57,59 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
             if (this._right.IsOptional && this._left.IsExpression(value))
             {
-                Cache(value, this._left);
+                Cache(value, true);
                 return true;
             }
 
             if (this._left.IsOptional && this._right.IsExpression(value))
             {
-                Cache(value, this._right);
+                Cache(value, false);
                 return true;
             }
 
             return false;
         }
 
-        private void Cache(string value, IEBNFItem item)
+        public bool IsExpression(ReadOnlyMemory<char> value)
         {
-            CacheFirstLevelSave(value, 1);
-            CacheSecondLevelSave(value, value, item);
+            return false;
+        }
+
+        private void Cache(string value, bool leftItem)
+        {
+            this._cache.TryAdd(value, new CacheItem[1]);
+            this._cache[value][0] = new CacheItem(value, leftItem);
         }
 
         private void Cache(string value, string leftValue, string rightValue)
         {
-            CacheFirstLevelSave(value, 2);
-            CacheSecondLevelSave(value, leftValue, this._left);
-            CacheSecondLevelSave(value, rightValue, this._right);
+            this._cache.TryAdd(value, new CacheItem[2]);
+            this._cache[value][0] = new CacheItem(leftValue, true);
+            this._cache[value][1] = new CacheItem(rightValue, false);
         }
 
-        private void CacheSecondLevelSave(string value, string childValue, IEBNFItem item)
-        {
-            this._cache[value].TryAdd(childValue, item);
-        }
-
-        private void CacheFirstLevelSave(string value, int capacity)
-        {
-            this._cache.TryAdd(value, new Dictionary<string, IEBNFItem>(capacity));
-
-        }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            List<IExpressionItem> result = null;
-
             if (IsExpression(value))
             {
-                result = new List<IExpressionItem>(25);
-                foreach (var cacheValue in this._cache[value])
+                var result = new List<IExpressionItem>(25);
+                foreach (var item in this._cache[value])
                 {
-                    var cacheValueStructure = cacheValue.Value.ExpressionStructure(cacheValue.Key);
+                    var cacheValueStructure = item.Condition
+                        ? this._left.ExpressionStructure(item.Value)
+                        : this._right.ExpressionStructure(item.Value);
+
                     if (cacheValueStructure != null)
                     {
                         result.AddRange(cacheValueStructure);
                     }
                 }
+
+                return result;
             }
 
-            return result;
+            return null;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems
 {
@@ -11,11 +12,14 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public string Expression { get; private set; }
 
+        private readonly ReadOnlyMemory<char> _expressionMemory;
+
         public int MinimalLength => this.Expression.Length;
 
         public Terminal(string value)
         {
             this.Expression = value;
+            this._expressionMemory = value.AsMemory();
         }
 
         /// <summary>
@@ -32,6 +36,11 @@ namespace Amy.Grammars.EBNF.EBNFItems
             return this.Expression.Equals(value);
         }
 
+        public bool IsExpression(ReadOnlyMemory<char> value)
+        {
+            return IsExpression(value.ToString());
+        }
+
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IExpressionItem[] result = null;
@@ -44,10 +53,28 @@ namespace Amy.Grammars.EBNF.EBNFItems
                     Expression = value
                 };
 
-                result = new IExpressionItem[] { resultItem };
+                result = new IExpressionItem[] {resultItem};
             }
 
             return result;
         }
+
+        //public IEnumerable<IExpressionItem> ExpressionStructure(ReadOnlyMemory<char> value)
+        //{
+        //    IExpressionItem[] result = null;
+
+        //    if (IsExpression(value))
+        //    {
+        //        var resultItem = new GrammarExpressionItem()
+        //        {
+        //            Item = this,
+        //            Expression = value.ToString()
+        //        };
+
+        //        result = new IExpressionItem[] { resultItem };
+        //    }
+
+        //    return result;
+        //}
     }
 }

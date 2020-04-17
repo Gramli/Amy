@@ -9,8 +9,6 @@ namespace Amy.Caching
 
         public bool IsReadOnly => true;
 
-        private readonly object __lock = new object();
-
         public SmartFixedCollection(int length)
             : base(length)
         {
@@ -18,19 +16,16 @@ namespace Amy.Caching
 
         public void Add(K key)
         {
-            lock (__lock)
+            if (Contains(key))
+                IncreaseUsage(key);
+            else if (this._full)
             {
-                if (Contains(key))
-                    IncreaseUsage(key);
-                else if (this._full)
-                {
-                    K keyToRemove = GetKeyToRemove();
-                    Remove(keyToRemove);
-                    AddUsage(key);
-                }
-                else
-                    AddUsage(key);
+                K keyToRemove = GetKeyToRemove();
+                Remove(keyToRemove);
+                AddUsage(key);
             }
+            else
+                AddUsage(key);
         }
 
         public override bool Remove(K key)

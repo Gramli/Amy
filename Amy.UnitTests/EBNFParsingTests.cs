@@ -46,46 +46,7 @@ namespace Amy.UnitTests
                 });
             definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
             {
-                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
-            });
-
-            definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(
-            (NonTerminal nonTerminal, List<NonTerminal> nonTerminals) =>
-            {
-                return new Moq.Mock<EBNFStartSymbol>(MockBehavior.Strict, nonTerminal, nonTerminals).Object;
-            });
-
-            this.parser.Parse(definitionMock.Object);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(MissingNonTerminalException))]
-        public void ParsingTest_MissingGrammarRule()
-        {
-
-            var definitionMock = new Mock<EBNFGrammarDefinition>();
-
-            definitionMock.Setup(exp => exp.ProductionRules).Returns(
-                new string[]
-                {
-                    this.definition.Termination,
-                    this.definition.Space,
-                    this.definition.Character,
-                    this.definition.Digit,
-                    this.definition.IntType,
-                    this.definition.BoolType,
-                    this.definition.Type,
-                    this.definition.Name,
-                    this.definition.BoolVar,
-                    this.definition.IntValue,
-                    this.definition.IntVar,
-                    this.definition.Variable,
-                    this.definition.Function,
-                    this.definition.Program
-                 });
-            definitionMock.Setup(exp => exp.GetNewNonTerminalInstance(It.IsAny<string>())).Returns((string str) =>
-            {
-                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str, 20).Object;
+                return new Moq.Mock<NonTerminal>(MockBehavior.Strict, str).Object;
             });
 
             definitionMock.Setup(exp => exp.GetStartSymbol(It.IsAny<NonTerminal>(), It.IsAny<List<NonTerminal>>())).Returns(

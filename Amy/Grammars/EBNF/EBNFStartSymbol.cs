@@ -1,7 +1,6 @@
 ﻿using Amy.Exceptions;
 using Amy.Grammars.EBNF.EBNFItems;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Amy.Grammars.EBNF
 {
