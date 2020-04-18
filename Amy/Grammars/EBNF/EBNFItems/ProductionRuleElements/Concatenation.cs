@@ -20,13 +20,15 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private readonly SmartFixedCollectionPair<string, CacheItem[]> _cache;
+        private readonly SmartFixedCollectionPair<string, CacheItem<string>[]> _cache;
+        private readonly SmartFixedCollectionPair<ReadOnlyMemory<char>, CacheItem<ReadOnlyMemory<char>>[]> _memoryCache;
 
         public Concatenation(IEBNFItem left, IEBNFItem right, int cacheLength)
         {
             this._left = left;
             this._right = right;
-            this._cache = new SmartFixedCollectionPair<string, CacheItem[]>(cacheLength);
+            this._cache = new SmartFixedCollectionPair<string, CacheItem<string>[]>(cacheLength);
+            this._memoryCache = new SmartFixedCollectionPair<ReadOnlyMemory<char>, CacheItem<ReadOnlyMemory<char>>[]>(cacheLength);
             this.MinimalLength = this._left.MinimalLength + this._right.MinimalLength;
             this.IsOptional = this._left.IsOptional && this._right.IsOptional;
         }
@@ -72,20 +74,66 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(ReadOnlyMemory<char> value)
         {
+            if (value.Length < this.MinimalLength)
+            {
+                return false;
+            }
+
+            if (this._memoryCache.ContainsKey(value))
+            {
+                return true;
+            }
+
+            for (var i = 1; i < value.Length; i++)
+            {
+                var leftValue = value.Slice(0, i);
+                var rightValue = value.Slice(i);
+                if (this._left.IsExpression(leftValue) && this._right.IsExpression(rightValue))
+                {
+                    Cache(value, leftValue, rightValue);
+                    return true;
+                }
+            }
+
+            if (this._right.IsOptional && this._left.IsExpression(value))
+            {
+                Cache(value, true);
+                return true;
+            }
+
+            if (this._left.IsOptional && this._right.IsExpression(value))
+            {
+                Cache(value, false);
+                return true;
+            }
+
             return false;
         }
 
         private void Cache(string value, bool leftItem)
         {
-            this._cache.TryAdd(value, new CacheItem[1]);
-            this._cache[value][0] = new CacheItem(value, leftItem);
+            this._cache.TryAdd(value, new CacheItem<string>[1]);
+            this._cache[value][0] = new CacheItem<string>(value, leftItem);
         }
 
         private void Cache(string value, string leftValue, string rightValue)
         {
-            this._cache.TryAdd(value, new CacheItem[2]);
-            this._cache[value][0] = new CacheItem(leftValue, true);
-            this._cache[value][1] = new CacheItem(rightValue, false);
+            this._cache.TryAdd(value, new CacheItem<string>[2]);
+            this._cache[value][0] = new CacheItem<string>(leftValue, true);
+            this._cache[value][1] = new CacheItem<string>(rightValue, false);
+        }
+
+        private void Cache(ReadOnlyMemory<char> value, bool leftItem)
+        {
+            this._memoryCache.TryAdd(value, new CacheItem<ReadOnlyMemory<char>>[1]);
+            this._memoryCache[value][0] = new CacheItem<ReadOnlyMemory<char>>(value, leftItem);
+        }
+
+        private void Cache(ReadOnlyMemory<char> value, ReadOnlyMemory<char> leftValue, ReadOnlyMemory<char> rightValue)
+        {
+            this._memoryCache.TryAdd(value, new CacheItem<ReadOnlyMemory<char>>[2]);
+            this._memoryCache[value][0] = new CacheItem<ReadOnlyMemory<char>>(leftValue, true);
+            this._memoryCache[value][1] = new CacheItem<ReadOnlyMemory<char>>(rightValue, false);
         }
 
 

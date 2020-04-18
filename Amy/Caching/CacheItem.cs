@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Amy.Caching
 {
-    internal class CacheItem
+    internal class CacheItem<T>
     {
-        public string Value { get; }
+        public T Value { get; }
         public bool Condition { get; }
 
-        public CacheItem(string value, bool condition)
+        public CacheItem(T value, bool condition)
         {
             this.Value = value;
             this.Condition = condition;

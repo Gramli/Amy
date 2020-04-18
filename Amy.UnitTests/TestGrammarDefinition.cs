@@ -21,6 +21,6 @@
         public string IntVar => "intVar = intType,space, name, \"=\", intValue;";
         public string Variable => "variable = (intVar | boolVar), termination ;";
         public string Function => "function = [\"private\"],space, type,space, name , \"{\",{variable},\"}\", termination ;";
-        public string Program => "program = function | (variable, [variable]);";
+        public string Program => "program = function | (variable, {variable});";
     }
 }

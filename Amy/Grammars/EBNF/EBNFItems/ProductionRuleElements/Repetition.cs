@@ -20,11 +20,13 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         private readonly IEBNFItem _item;
 
         private readonly SmartFixedCollectionPair<string, string[]> _cache;
+        private readonly SmartFixedCollectionPair<ReadOnlyMemory<char>, ReadOnlyMemory<char>[]> _memoryCache;
 
         public Repetition(IEBNFItem item, int cacheLength)
         {
             this._item = item;
             this._cache = new SmartFixedCollectionPair<string, string[]>(cacheLength);
+            this._memoryCache = new SmartFixedCollectionPair<ReadOnlyMemory<char>, ReadOnlyMemory<char>[]>(cacheLength);
         }
 
         /// <summary>
@@ -71,6 +73,33 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(ReadOnlyMemory<char> value)
         {
+            if (this._memoryCache.ContainsKey(value))
+            {
+                return true;
+            }
+
+            for (var i = 1; i < value.Length; i++)
+            {
+                var leftValue = value.Slice(0,i);
+                if (this._item.IsExpression(leftValue))
+                {
+                    var rightValue = value.Slice(i);
+                    var isRightValueExpression = IsExpression(rightValue);
+                    if (isRightValueExpression)
+                    {
+                        Cache(value, leftValue, rightValue);
+                        return true;
+                    }
+                }
+
+            }
+
+            if (this._item.IsExpression(value))
+            {
+                Cache(value);
+                return true;
+            }
+
             return false;
         }
 
@@ -107,6 +136,19 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             this._cache.TryAdd(value, new string[2]);
             this._cache[value][0] = leftValue;
             this._cache[value][1] = rightValue;
+        }
+
+        private void Cache(ReadOnlyMemory<char> value)
+        {
+            //it has to be empty, because value cannot be null
+            this._memoryCache.TryAdd(value, new ReadOnlyMemory<char>[0]);
+        }
+
+        private void Cache(ReadOnlyMemory<char> value, ReadOnlyMemory<char> leftValue, ReadOnlyMemory<char> rightValue)
+        {
+            this._memoryCache.TryAdd(value, new ReadOnlyMemory<char>[2]);
+            this._memoryCache[value][0] = leftValue;
+            this._memoryCache[value][1] = rightValue;
         }
     }
 }

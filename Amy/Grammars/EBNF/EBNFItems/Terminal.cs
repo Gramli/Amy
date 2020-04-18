@@ -38,7 +38,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public bool IsExpression(ReadOnlyMemory<char> value)
         {
-            return IsExpression(value.ToString());
+            return value.Span.Equals(this.Expression, StringComparison.Ordinal);
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
