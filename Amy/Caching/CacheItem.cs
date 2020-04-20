@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Amy.Caching
+﻿namespace Amy.Caching
 {
     internal class CacheItem<T>
     {

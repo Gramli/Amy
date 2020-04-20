@@ -92,7 +92,7 @@ namespace Amy.Grammars.EBNF
                 var right = GetEBNFItem(newRule, listOfExistedTerminals, endNotation);
                 switch (firstChar)
                 {
-                    case Alternation.notation: result = new Alternation(left, right, this._cacheLength); break;
+                    case Alternation.notation: result = new Alternation(left, right); break;
                     case Concatenation.notation: result = new Concatenation(left, right, this._cacheLength); break;
                 }
             }

@@ -12,14 +12,11 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
         public string Expression { get; private set; }
 
-        private readonly ReadOnlyMemory<char> _expressionMemory;
-
         public int MinimalLength => this.Expression.Length;
 
         public Terminal(string value)
         {
             this.Expression = value;
-            this._expressionMemory = value.AsMemory();
         }
 
         /// <summary>
@@ -34,11 +31,6 @@ namespace Amy.Grammars.EBNF.EBNFItems
         public bool IsExpression(string value)
         {
             return this.Expression.Equals(value);
-        }
-
-        public bool IsExpression(ReadOnlyMemory<char> value)
-        {
-            return value.Span.Equals(this.Expression, StringComparison.Ordinal);
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
@@ -58,23 +50,5 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
             return result;
         }
-
-        //public IEnumerable<IExpressionItem> ExpressionStructure(ReadOnlyMemory<char> value)
-        //{
-        //    IExpressionItem[] result = null;
-
-        //    if (IsExpression(value))
-        //    {
-        //        var resultItem = new GrammarExpressionItem()
-        //        {
-        //            Item = this,
-        //            Expression = value.ToString()
-        //        };
-
-        //        result = new IExpressionItem[] { resultItem };
-        //    }
-
-        //    return result;
-        //}
     }
 }

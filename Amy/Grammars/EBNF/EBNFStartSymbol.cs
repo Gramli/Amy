@@ -56,10 +56,5 @@ namespace Amy.Grammars.EBNF
         {
             return ((IEBNFItem)this.Rule).IsExpression(value);
         }
-
-        public bool IsExpression(ReadOnlyMemory<char> value)
-        {
-            return ((IEBNFItem)this.Rule).IsExpression(value);
-        }
     }
 }

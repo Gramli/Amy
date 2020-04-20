@@ -1,6 +1,4 @@
-﻿using System;
-using Amy.Caching;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -21,15 +19,10 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private readonly SmartFixedCollectionPair<string, bool> _cache;
-        private readonly SmartFixedCollectionPair<ReadOnlyMemory<char>, bool> _memoryCache;
-
-        public Alternation(IEBNFItem left, IEBNFItem right, int cacheLength)
+        public Alternation(IEBNFItem left, IEBNFItem right)
         {
             this._left = left;
             this._right = right;
-            this._cache = new SmartFixedCollectionPair<string, bool>(cacheLength);
-            this._memoryCache = new SmartFixedCollectionPair<ReadOnlyMemory<char>, bool>(cacheLength);
             this.MinimalLength = this._left.MinimalLength <= this._right.MinimalLength ? this._left.MinimalLength : this._right.MinimalLength;
             this.IsOptional = this._left.IsOptional && this._right.IsOptional;
         }
@@ -45,77 +38,39 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(string value)
         {
-            if (value.Length < this.MinimalLength)
-            {
-                return false;
-            }
-
-            if (this._cache.ContainsKey(value))
-            {
-                return true;
-            }
-
-            if (this._left.IsExpression(value))
-            {
-                Cache(value, true);
-                return true;
-            }
-
-            if (this._right.IsExpression(value))
-            {
-                Cache(value, false);
-                return true;
-            }
-
-            return false;
-
+            return CheckMinimalLength(value.Length) && (IsLeft(value) || IsRight(value));
         }
 
-        public bool IsExpression(ReadOnlyMemory<char> value)
+        protected bool CheckMinimalLength(int valueLength)
         {
-            if (value.Length < this.MinimalLength)
-            {
-                return false;
-            }
+            return valueLength >= this.MinimalLength;
+        }
 
-            if (this._memoryCache.ContainsKey(value))
-            {
-                return true;
-            }
+        protected bool IsLeft(string value)
+        {
+            return this._left.IsExpression(value);
+        }
 
-            if (this._left.IsExpression(value))
-            {
-                Cache(value, true);
-                return true;
-            }
-
-            if (this._right.IsExpression(value))
-            {
-                Cache(value, false);
-                return true;
-            }
-
-            return false;
-
+        protected bool IsRight(string value)
+        {
+            return this._right.IsExpression(value);
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            if (IsExpression(value))
+            if (!CheckMinimalLength(value.Length))
             {
-                return this._cache[value] ? this._left.ExpressionStructure(value) : this._right.ExpressionStructure(value);
+                return null;
+            }
+            if (IsLeft(value))
+            {
+                return this._left.ExpressionStructure(value);
+            }
+            if (IsRight(value))
+            {
+                return this._right.ExpressionStructure(value);
             }
             return null;
-        }
-
-        private void Cache(string value, bool leftItem)
-        {
-            this._cache.TryAdd(value, leftItem);
-        }
-
-        private void Cache(ReadOnlyMemory<char> value, bool leftItem)
-        {
-            this._memoryCache.TryAdd(value, leftItem);
         }
     }
 }

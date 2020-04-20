@@ -59,11 +59,6 @@ namespace Amy.Grammars.EBNF.EBNFItems
             return value.Length >= this.MinimalLength && this._rightSide.IsExpression(value);
         }
 
-        public bool IsExpression(ReadOnlyMemory<char> value)
-        {
-            return value.Length >= this.MinimalLength && this._rightSide.IsExpression(value);
-        }
-
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             IExpressionItem[] result = null;
@@ -85,27 +80,5 @@ namespace Amy.Grammars.EBNF.EBNFItems
 
             return result;
         }
-
-        //public IEnumerable<IExpressionItem> ExpressionStructure(ReadOnlyMemory<char> value)
-        //{
-        //    IExpressionItem[] result = null;
-        //    if (this._rightSide == null)
-        //        throw new GrammarParseException($"Right side rule of NonTerminal: {this.Name} is null.", new NullReferenceException());
-
-        //    if (IsExpression(value))
-        //    {
-        //        result = new IExpressionItem[]
-        //        {
-        //            new GrammarExpressionItem()
-        //            {
-        //                Item = this,
-        //                Expression = value.ToString(),
-        //                Childs = this._rightSide.ExpressionStructure(value)
-        //            }
-        //        };
-        //    }
-
-        //    return result;
-        //}
     }
 }

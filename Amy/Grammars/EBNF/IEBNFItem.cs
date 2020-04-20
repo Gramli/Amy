@@ -24,10 +24,5 @@ namespace Amy.Grammars.EBNF
         /// Determines that value is expression or not
         /// </summary>
         bool IsExpression(string value);
-
-        /// <summary>
-        /// Determines that value is expression or not
-        /// </summary>
-        bool IsExpression(ReadOnlyMemory<char> value);
     }
 }

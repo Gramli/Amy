@@ -41,11 +41,6 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return this._item.IsExpression(value);
         }
 
-        public bool IsExpression(ReadOnlyMemory<char> value)
-        {
-            return this._item.IsExpression(value);
-        }
-
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             if (IsExpression(value))
