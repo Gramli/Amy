@@ -18,6 +18,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
         private IEBNFItem _rightSide;
 
         public IFormalGrammarItem Rule => this._rightSide;
+
         public bool IsOptional { get; private set; }
 
         public int MinimalLength { get; private set; }

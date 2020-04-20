@@ -14,6 +14,7 @@ namespace Amy
         //TODO DAN pouzivat nejrychlejsi kolekci - nemusi byt nutne IEnumerable
         //TODO DAN pred alokovavat
         //TODO DAN misto addrange zkusit add s for!!
+        //TODO DAN Cachovat pouze v Terminalech a NonTerminalech
         IEnumerable<IExpressionItem> Childs { get; }
     }
 }

@@ -17,7 +17,7 @@ namespace Amy.Caching
             set { new InvalidOperationException("Can't set new value, its read only"); }
         }
 
-        private Dictionary<K, V> _data;
+        private readonly Dictionary<K, V> _data;
 
         public ICollection<K> Keys => this._data.Keys;
 
@@ -27,8 +27,6 @@ namespace Amy.Caching
 
         public bool IsReadOnly => true;
 
-        private readonly object __lock = new object();
-
         public SmartFixedCollectionPair(int length)
             : base(length)
         {
@@ -37,19 +35,16 @@ namespace Amy.Caching
 
         public void Add(K key, V value)
         {
-            lock (__lock)
+            if (Contains(key))
+                IncreaseUsage(key);
+            else if (this._full)
             {
-                if (Contains(key))
-                    IncreaseUsage(key);
-                else if (this._full)
-                {
-                    K keyToRemove = GetKeyToRemove();
-                    Remove(keyToRemove);
-                    AddWithUsage(key, value);
-                }
-                else
-                    AddWithUsage(key, value);
+                K keyToRemove = GetKeyToRemove();
+                Remove(keyToRemove);
+                AddWithUsage(key, value);
             }
+            else
+                AddWithUsage(key, value);
         }
 
         private void AddWithUsage(K key, V value)

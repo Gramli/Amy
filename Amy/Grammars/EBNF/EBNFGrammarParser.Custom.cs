@@ -15,36 +15,33 @@ namespace Amy.Grammars.EBNF
     /// </summary>
     public class EBNFGrammarParserCustom : IFormalGrammarParser
     {
-        //private readonly List<NonTerminal> _emptyRules;
         private EBNFGrammarDefinition _actualDefinition;
         private const string _termination = ";";
-        private int _cacheLength;
+        private readonly int _cacheLength;
+
         public EBNFGrammarParserCustom(int cacheLength)
         {
-            //this._emptyRules = new List<NonTerminal>();
             this._cacheLength = cacheLength;
         }
 
         public IStartSymbol Parse(IFormalGrammarDefinition definition)
         {
             this._actualDefinition = (EBNFGrammarDefinition)definition;
-            //this._emptyRules.Clear();
 
             var productionRules = new List<NonTerminal>();
 
             for (var i = this._actualDefinition.ProductionRules.Length - 1; i > 0; i--)
             {
                 if (string.IsNullOrEmpty(this._actualDefinition.ProductionRules[i])) continue;
-                string rule = RemoveSpecialChars(this._actualDefinition.ProductionRules[i]);
+                var rule = RemoveSpecialChars(this._actualDefinition.ProductionRules[i]);
                 var nonTerminal = GetNonTerminal(rule, productionRules);
                 productionRules.Add(nonTerminal);
             }
 
-            string startSymbolRule = RemoveSpecialChars(this._actualDefinition.ProductionRules[0]);
+            var startSymbolRule = RemoveSpecialChars(this._actualDefinition.ProductionRules[0]);
             var startSymbolNonTerminal = GetNonTerminal(startSymbolRule, productionRules);
             productionRules.Add(startSymbolNonTerminal);
             var startSymbol = this._actualDefinition.GetStartSymbol(startSymbolNonTerminal, productionRules);
-            //SetEmptyRules(startSymbol);
             return startSymbol;
         }
 
@@ -52,15 +49,6 @@ namespace Amy.Grammars.EBNF
         {
             return rule.RemoveSpaces().RemoveNewLines();
         }
-
-        //private void SetEmptyRules(IStartSymbol startSymbol)
-        //{
-        //    foreach (var rule in this._emptyRules)
-        //    {
-        //        IEBNFItem item = (IEBNFItem)startSymbol.GetNonTerminal(rule.Name);
-        //        rule.SetRightSide(item);
-        //    }
-        //}
 
         private NonTerminal GetNonTerminal(string productionRule, List<NonTerminal> listOfExistedTerminals)
         {
@@ -70,11 +58,6 @@ namespace Amy.Grammars.EBNF
             result.SetRightSide(nonTerminalRule);
             return result;
 
-        }
-
-        private string[] SplitByTermination(string productionRules)
-        {
-            return Regex.Split(productionRules, $"(?<=[{EBNFGrammarParserCustom._termination}])");
         }
 
         private string[] SplitByDefinition(string productionRule)
@@ -109,7 +92,7 @@ namespace Amy.Grammars.EBNF
                 var right = GetEBNFItem(newRule, listOfExistedTerminals, endNotation);
                 switch (firstChar)
                 {
-                    case Alternation.notation: result = new Alternation(left, right, this._cacheLength); break;
+                    case Alternation.notation: result = new Alternation(left, right); break;
                     case Concatenation.notation: result = new Concatenation(left, right, this._cacheLength); break;
                 }
             }
@@ -155,7 +138,6 @@ namespace Amy.Grammars.EBNF
                         if (result == null)
                         {
                             var emptyNonTerm = this._actualDefinition.GetNewNonTerminalInstance(builder.ToString());
-                            //this._emptyRules.Add(emptyNonTerm);
                             result = emptyNonTerm;
                         }
                     }
@@ -171,11 +153,11 @@ namespace Amy.Grammars.EBNF
                                 break;
                             case Optional.notation:
                                 var opItem = GetEBNFItem(restOfRepRule, listOfExistedTerminals, Optional.endNotation);
-                                result = new Optional(opItem, this._cacheLength);
+                                result = new Optional(opItem);
                                 break;
                             case Grouping.notation:
                                 var grItem = GetEBNFItem(restOfRepRule, listOfExistedTerminals, Grouping.endNotation);
-                                result = new Grouping(grItem, this._cacheLength);
+                                result = new Grouping(grItem);
                                 break;
                         }
                     }

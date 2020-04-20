@@ -1,5 +1,4 @@
-﻿using Amy.Caching;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
@@ -20,13 +19,10 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private readonly IEBNFItem _right;
 
-        private readonly SmartFixedCollectionPair<string, IEBNFItem> _cache;
-
-        public Alternation(IEBNFItem left, IEBNFItem right, int cacheLength)
+        public Alternation(IEBNFItem left, IEBNFItem right)
         {
             this._left = left;
             this._right = right;
-            this._cache = new SmartFixedCollectionPair<string, IEBNFItem>(cacheLength);
             this.MinimalLength = this._left.MinimalLength <= this._right.MinimalLength ? this._left.MinimalLength : this._right.MinimalLength;
             this.IsOptional = this._left.IsOptional && this._right.IsOptional;
         }
@@ -42,45 +38,39 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         public bool IsExpression(string value)
         {
-            if (string.IsNullOrEmpty(value) || value.Length < this.MinimalLength)
-            {
-                return false;
-            }
+            return CheckMinimalLength(value.Length) && (IsLeft(value) || IsRight(value));
+        }
 
-            if (this._cache.ContainsKey(value))
-            {
-                return true;
-            }
+        protected bool CheckMinimalLength(int valueLength)
+        {
+            return valueLength >= this.MinimalLength;
+        }
 
-            if (this._left.IsExpression(value))
-            {
-                Cache(value, this._left);
-                return true;
-            }
+        protected bool IsLeft(string value)
+        {
+            return this._left.IsExpression(value);
+        }
 
-            if (this._right.IsExpression(value))
-            {
-                Cache(value, this._right);
-                return true;
-            }
-
-            return false;
-
+        protected bool IsRight(string value)
+        {
+            return this._right.IsExpression(value);
         }
 
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
-            IEnumerable<IExpressionItem> result = null;
-            if (IsExpression(value))
+            if (!CheckMinimalLength(value.Length))
             {
-                result = this._cache[value].ExpressionStructure(value);
+                return null;
             }
-            return result;
-        }
-
-        private void Cache(string value, IEBNFItem item)
-        {
-            this._cache.TryAdd(value, item);
+            if (IsLeft(value))
+            {
+                return this._left.ExpressionStructure(value);
+            }
+            if (IsRight(value))
+            {
+                return this._right.ExpressionStructure(value);
+            }
+            return null;
         }
     }
 }

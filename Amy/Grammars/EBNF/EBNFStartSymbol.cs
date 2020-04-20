@@ -1,7 +1,7 @@
-﻿using Amy.Exceptions;
+﻿using System;
+using Amy.Exceptions;
 using Amy.Grammars.EBNF.EBNFItems;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Amy.Grammars.EBNF
 {
@@ -40,7 +40,7 @@ namespace Amy.Grammars.EBNF
         /// <summary>
         /// Retunrs nonTerminal by name
         /// </summary>
-        INonTerminal IStartSymbol.GetNonTerminal(string name)
+        public INonTerminal GetNonTerminal(string name)
         {
             if (!this._productionRules.ContainsKey(name))
                 throw new MissingNonTerminalException("There is missing non terminal.", new KeyNotFoundException());

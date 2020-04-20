@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems
 {
@@ -44,7 +45,7 @@ namespace Amy.Grammars.EBNF.EBNFItems
                     Expression = value
                 };
 
-                result = new IExpressionItem[] { resultItem };
+                result = new IExpressionItem[] {resultItem};
             }
 
             return result;

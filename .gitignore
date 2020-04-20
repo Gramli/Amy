@@ -8,3 +8,8 @@ Amy/bin/
 Amy.UnitTests/obj/
 
 Amy.UnitTests/bin/
+.vs/Amy/DesignTimeBuild/.dtbcache.v2
+
+Amy.PerformanceTester/bin/
+
+Amy.PerformanceTester/obj/
