@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems
 {
     /// <summary>
-    /// Represents terminal in ENBF
+    /// Implementation of terminal in ENBF
     /// </summary>
     internal class Terminal : IEBNFItem, ITerminal
     {

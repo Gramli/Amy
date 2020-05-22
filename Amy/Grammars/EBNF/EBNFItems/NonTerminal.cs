@@ -1,12 +1,11 @@
-﻿using Amy.Caching;
-using Amy.Exceptions;
+﻿using Amy.Exceptions;
 using System;
 using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF.EBNFItems
 {
     /// <summary>
-    /// Represents NonTerminal in EBNF
+    /// Implementation of NonTerminal in EBNF
     /// </summary>
     public abstract class NonTerminal : IEBNFItem, INonTerminal
     {

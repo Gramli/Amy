@@ -3,7 +3,7 @@
 namespace Amy
 {
     /// <summary>
-    /// Encapsulates string representation of expression with item
+    /// Encapsulates string representation of expression with IFormalGrammarItem and its childs representations
     /// </summary>
     public interface IExpressionItem
     {

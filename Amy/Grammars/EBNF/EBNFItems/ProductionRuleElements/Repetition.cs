@@ -43,6 +43,10 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 return true;
             }
 
+            //read from left to right
+            //sum left value and check if is item expression
+            // if value is expression then call recursively this method with right side of expression
+            //if right side is true, cache expression and return
             var leftValue = string.Empty;
             for (var i = 0; i < value.Length - 1; i++)
             {
@@ -50,8 +54,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
                 if (this._item.IsExpression(leftValue))
                 {
                     var rightValue = value[(i+1)..];
-                    var isRightValueExpression = IsExpression(rightValue);
-                    if (isRightValueExpression)
+                    if (IsExpression(rightValue))
                     {
                         Cache(value, leftValue, rightValue);
                         return true;
@@ -93,7 +96,7 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 
         private void Cache(string value)
         {
-            //it has to be empty, because value cannot be null
+            //the array has to be empty, because value cannot be null
             this._cache.TryAdd(value, new string[0]);
         }
 

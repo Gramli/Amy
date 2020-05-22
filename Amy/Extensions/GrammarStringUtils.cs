@@ -7,14 +7,24 @@ namespace Amy.Extensions
     {
         public static string RemoveCharExceptTerminals(this string rule, char character)
         {
-            bool dontSkip = false;
-            StringBuilder result1 = new StringBuilder();
+            var dontSkip = false;
+            var result1 = new StringBuilder();
             for (int i = 0; i < rule.Length; i++)
             {
-                if (rule[i].Equals(character) && !dontSkip) continue;
-                bool quote = rule[i].Equals('"');
-                if (quote && dontSkip) dontSkip = false;
-                else if (quote && !dontSkip) dontSkip = true;
+                if (rule[i].Equals(character) && !dontSkip)
+                {
+                    continue;
+                }
+                var quote = rule[i].Equals('"');
+                if (quote && dontSkip)
+                {
+                    dontSkip = false;
+                }
+                else if (quote && !dontSkip)
+                {
+                    dontSkip = true;
+                }
+
                 result1.Append(rule[i]);
             }
 

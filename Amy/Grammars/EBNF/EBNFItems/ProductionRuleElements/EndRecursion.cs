@@ -42,6 +42,9 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
             return this.Notation;
         }
 
+        /// <summary>
+        /// Returns null
+        /// </summary>
         public IEnumerable<IExpressionItem> ExpressionStructure(string value)
         {
             return null;

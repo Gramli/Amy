@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Amy.Grammars.EBNF
 {
+    /// <summary>
+    /// Base class for EBNF grammar definition
+    /// </summary>
     public abstract class EBNFGrammarDefinition : IFormalGrammarDefinition
     {
         public abstract string[] ProductionRules { get; }

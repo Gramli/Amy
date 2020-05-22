@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace Amy.Caching
 {
+    /// <summary>
+    /// Base for fixed length collection with usage count
+    /// Always when item is get its usage increase
+    /// </summary>
     public abstract class UsageFixedCollection<K>
     {
         private readonly Dictionary<K, int> _usage;

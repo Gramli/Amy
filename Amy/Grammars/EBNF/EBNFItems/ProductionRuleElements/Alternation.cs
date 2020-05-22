@@ -3,7 +3,7 @@
 namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
 {
     /// <summary>
-    /// EBNF Alternation rule
+    /// Implementation of EBNF Alternation rule
     /// </summary>
     internal class Alternation : IProductionRule
     {
@@ -30,7 +30,6 @@ namespace Amy.Grammars.EBNF.EBNFItems.ProductionRuleElements
         /// <summary>
         /// Rebuild Alternation rule with left and right item like is defined in grammar
         /// </summary>
-        /// <returns></returns>
         public string Rebuild()
         {
             return $"{this._left.Rebuild()}{this.Notation}{this._right.Rebuild()}";
