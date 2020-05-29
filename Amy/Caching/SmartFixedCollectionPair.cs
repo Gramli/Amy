@@ -35,16 +35,12 @@ namespace Amy.Caching
 
         public void Add(K key, V value)
         {
-            if (Contains(key))
-                IncreaseUsage(key);
-            else if (this._full)
+            if (this._full)
             {
-                K keyToRemove = GetKeyToRemove();
+                var keyToRemove = GetKeyToRemove();
                 Remove(keyToRemove);
-                AddWithUsage(key, value);
             }
-            else
-                AddWithUsage(key, value);
+            AddWithUsage(key, value);
         }
 
         private void AddWithUsage(K key, V value)

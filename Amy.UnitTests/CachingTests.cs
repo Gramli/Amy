@@ -9,8 +9,8 @@ namespace Amy.UnitTests
     [TestClass]
     public class CachingTests
     {
-        int randomDataSize = 500;
-        int colSize = 50;
+        private int randomDataSize = 500;
+        private int colSize = 50;
 
         [TestMethod]
         public void SmartFixedCollectionAdding()
@@ -20,7 +20,7 @@ namespace Amy.UnitTests
             //create random data
             var randomData = new List<int>(randomDataSize);
             var random = new Random();
-            for(int i=0;i<randomDataSize;i++)
+            for(var i=0;i<randomDataSize;i++)
             {
                 randomData.Add(random.Next(0, 75));
             }
@@ -36,10 +36,10 @@ namespace Amy.UnitTests
             //check duplicates
             Assert.IsFalse(col.GroupBy(x => x).Where(g => g.Count() > 1).Any());
             //remove item
-            string lastItem = col.Last();
+            var lastItem = col.Last();
             col.Remove(lastItem);
             //get first and add
-            string first = col.First();
+            var first = col.First();
             col.Add(first);
             //length should not change
             Assert.AreEqual(colSize - 1, col.Count());
@@ -53,7 +53,7 @@ namespace Amy.UnitTests
             //create random data
             var randomData = new List<int>(randomDataSize);
             var random = new Random();
-            for (int i = 0; i < randomDataSize; i++)
+            for (var i = 0; i < randomDataSize; i++)
             {
                 randomData.Add(random.Next(0, 75));
             }
