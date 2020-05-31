@@ -16,20 +16,25 @@ namespace Amy.Caching
 
         public void Add(K key)
         {
+            if (ContainsUsage(key))
+            {
+                IncreaseUsage(key);
+                return;
+            }
+            
             if (this._full)
             {
                 var keyToRemove = GetKeyToRemove();
                 Remove(keyToRemove);
             }
-
             AddUsage(key);
+
 
         }
 
         public override bool Remove(K key)
         {
-            RemoveUsage(key);
-            return true;
+            return RemoveUsage(key);
         }
 
         public override bool Contains(K key)

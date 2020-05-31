@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 
 namespace Amy.Caching
 {
@@ -29,28 +30,29 @@ namespace Amy.Caching
 
         protected K GetKeyToRemove()
         {
-            return this.usageOrder[this._usage.Count-1];
+            return this.usageOrder[this._usage.Count - 1];
         }
 
-        protected void RemoveUsage(K key)
+        protected bool RemoveUsage(K key)
         {
-            this._usage.Remove(key);
+            var usageValue = _usage[key];
+            usageOrder[usageValue.OrderIndex] = default;
+            return this._usage.Remove(key);
+
         }
 
         protected void AddUsage(K key)
         {
-            if (this._full || ContainsUsage(key))
+            if (_full || ContainsUsage(key))
             {
-                IncreaseUsage(key);
-                ChangeOrder(key);
+                throw new ArgumentOutOfRangeException("Can't add new item to usage collections, its full");
             }
-            else
-            {
-                this._usage.Add(key, new UsageOrder());
-                var orderIndex = this._usage.Count - 1;
-                this._usage[key].OrderIndex = orderIndex;
-                this.usageOrder[orderIndex] = key;
-            }
+
+            this._usage.Add(key, new UsageOrder());
+            var orderIndex = this._usage.Count - 1;
+            this._usage[key].OrderIndex = orderIndex;
+            this.usageOrder[orderIndex] = key;
+
         }
 
         private void ChangeOrder(K key)
@@ -76,6 +78,7 @@ namespace Amy.Caching
         protected void IncreaseUsage(K key)
         {
             this._usage[key].Usage++;
+            ChangeOrder(key);
         }
 
         protected bool ContainsUsage(K key)
