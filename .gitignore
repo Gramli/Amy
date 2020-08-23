@@ -13,3 +13,4 @@ Amy.UnitTests/bin/
 Amy.PerformanceTester/bin/
 
 Amy.PerformanceTester/obj/
+Amy/nuget.config
