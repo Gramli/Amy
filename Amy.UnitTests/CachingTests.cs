@@ -9,21 +9,15 @@ namespace Amy.UnitTests
     [TestClass]
     public class CachingTests
     {
-        private int randomDataSize = 500;
-        private int colSize = 50;
+        private readonly int wantedCollectionSize = 50;
 
         [TestMethod]
         public void SmartFixedCollectionAdding()
         {
-            var col = new SmartFixedCollection<string>(colSize);
+            var col = new SmartFixedCollection<string>(wantedCollectionSize);
 
             //create random data
-            var randomData = new List<int>(randomDataSize);
-            var random = new Random();
-            for(var i=0;i<randomDataSize;i++)
-            {
-                randomData.Add(random.Next(0, 75));
-            }
+            var randomData = CreateRandomData(5);
 
             //fill col
             foreach (var item in randomData)
@@ -32,7 +26,7 @@ namespace Amy.UnitTests
             }
 
             //check count
-            Assert.IsTrue(col.Count() == this.colSize);
+            Assert.IsTrue(col.Count() == this.wantedCollectionSize);
             //check duplicates
             Assert.IsFalse(col.GroupBy(x => x).Where(g => g.Count() > 1).Any());
             //remove item
@@ -42,21 +36,16 @@ namespace Amy.UnitTests
             var first = col.First();
             col.Add(first);
             //length should not change
-            Assert.AreEqual(colSize - 1, col.Count());
+            Assert.AreEqual(wantedCollectionSize - 1, col.Count());
         }
 
         [TestMethod]
         public void SmartFixedCollectionPairAdding()
         {
-            var col = new SmartFixedCollectionPair<string, string>(colSize);
+            var col = new SmartFixedCollectionPair<string, string>(wantedCollectionSize);
 
             //create random data
-            var randomData = new List<int>(randomDataSize);
-            var random = new Random();
-            for (var i = 0; i < randomDataSize; i++)
-            {
-                randomData.Add(random.Next(0, 75));
-            }
+            var randomData = CreateRandomData(5);
 
             //fill col
             foreach (var item in randomData)
@@ -65,7 +54,7 @@ namespace Amy.UnitTests
             }
 
             //check count
-            Assert.IsTrue(col.Count() == this.colSize);
+            Assert.IsTrue(col.Count() == this.wantedCollectionSize);
             //check duplicates
             Assert.IsFalse(col.GroupBy(x => x).Where(g => g.Count() > 1).Any());
             //remove item
@@ -75,7 +64,29 @@ namespace Amy.UnitTests
             var first = col.First();
             col.Add(first);
             //length should not change
-            Assert.AreEqual(colSize - 1, col.Count());
+            Assert.AreEqual(wantedCollectionSize - 1, col.Count());
+        }
+
+        private List<int> CreateRandomData(int iterations)
+        {
+            var length = wantedCollectionSize * iterations;
+            var randomData = new List<int>(length);
+
+            for (var i = 0; i < wantedCollectionSize; i++)
+            {
+                randomData.Add(i);
+            }
+
+            var random = new Random();
+            var randomIterationLenght = length - wantedCollectionSize;
+            for(var i=0;i< randomIterationLenght; i++)
+            {
+                var value = random.Next(0, wantedCollectionSize);
+                randomData.Add(value);
+            }
+
+
+            return randomData;
         }
     }
 }
